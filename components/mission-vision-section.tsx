@@ -18,7 +18,7 @@ export function MissionVisionSection() {
             Our Mission & Vision
           </h2>
           <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
-            Driving Nigeria's cooperative movement towards a sustainable and
+            Driving Nigeria&apos;s cooperative movement towards a sustainable and
             prosperous future.
           </p>
         </motion.div>
@@ -41,7 +41,7 @@ export function MissionVisionSection() {
                   Unify Workers Cooperatives for a Better World through
                   Cooperation, Collaboration, Advocacy, Peer Review, Training
                   and Investment. We are committed to strengthening the
-                  cooperative ecosystem across Nigeria's federal government
+                  cooperative ecosystem across Nigeria&apos;s federal government
                   institutions.
                 </p>
               </CardContent>
