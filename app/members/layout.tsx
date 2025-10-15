@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   twitter: {
     title: "FedCoop Member Cooperatives - Our Network",
     description:
-      "Explore the community of cooperative societies working together for mutual benefit. Join our federation of federal government staff cooperatives.",
+      "Explore the community of cooperative societies working together for mutual benefit. Join our federation of federal government staff cooperatives",
   },
 };
 
