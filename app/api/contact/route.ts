@@ -4,6 +4,12 @@ import { ContactFormEmail } from "@/emails/contact-form-email";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
+console.log(
+  "Resend key:",
+  process.env.RESEND_API_KEY ? "✅ Loaded" : "❌ Missing"
+);
+
+
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export async function POST(request: NextRequest) {
@@ -54,7 +60,7 @@ export async function POST(request: NextRequest) {
     // Send email using Resend
     console.log("📤 Sending email via Resend...");
     const { data, error } = await resend.emails.send({
-      from: "FEDCOOP <noreply@fedcoop.org>",
+      from: "FEDCOOP <contact@fedcoop.org>",
       to: ["email@fedcoop.org"],
       replyTo: email,
       subject: `Website Contact: ${subject}`,
