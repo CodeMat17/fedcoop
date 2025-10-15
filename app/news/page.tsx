@@ -148,57 +148,59 @@ export default function NewsPage() {
                 Featured Article
               </h2>
               <Card className='overflow-hidden hover:shadow-lg transition-shadow duration-300'>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-6 px-4 py-8 sm:px-8 items-center'>
-                  <div className=''>
-                    <div className='flex items-center gap-2 mb-4'>
-                      <Badge
-                        variant='outline'
-                        className='bg-green-50 text-green-700 border-green-200'>
-                        Featured
-                      </Badge>
-                    </div>
-                    <h3 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 leading-tight'>
-                      {featuredNews.title}
-                    </h3>
-                    {/* <p className='text-muted-foreground mb-3 leading-5 text-sm sm:text-base line-clamp-3'>
-                      {featuredNews.body}
-                    </p> */}
-                   
-                    <div className='flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground mb-3'>
-                      <div className='flex items-center gap-2'>
-                        <Calendar className='w-4 h-4' />
-                        <span>
-                          {dayjs(featuredNews._creationTime).format(
-                            "MMM DD, YYYY"
-                          )}
-                        </span>
+                <div className='px-4 sm:px-8'>
+                  <div className='flex items-center gap-2 mb-4'>
+                    <Badge
+                      variant='outline'
+                      className='bg-green-50 text-green-700 border-green-200'>
+                      Featured
+                    </Badge>
+                  </div>
+
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-6 items-center'>
+                    <div className="space-y-3">
+                      <h3 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight'>
+                        {featuredNews.title}
+                      </h3>
+
+                      <div className='flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground'>
+                        <div className='flex items-center gap-2'>
+                          <Calendar className='w-4 h-4' />
+                          <span>
+                            {dayjs(featuredNews._creationTime).format(
+                              "MMM DD, YYYY"
+                            )}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <div className='flex flex-col sm:flex-row gap-3'>
-                      <Button asChild className='group w-full sm:w-auto'>
-                        <Link href={`/news/${featuredNews.slug}`}>
-                          Read More
-                          <ArrowRight className='w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform' />
-                        </Link>
-                      </Button>
 
-                      <Button
-                        variant='outline'
-                        onClick={() => handleShare(featuredNews)}
-                        className='group w-full sm:w-auto'>
-                        <Share2 className='w-4 h-4 mr-1 group-hover:scale-110 transition-transform' />
-                        Share
-                      </Button>
+                    <div className='relative overflow-hidden aspect-video w-full rounded-xl mx-auto'>
+                      <Image
+                        src={featuredNews.imageUrl || "/hero.svg"}
+                        alt={featuredNews.title}
+                        fill
+                        className=' object-cover'
+                      />
+                      <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent' />
                     </div>
                   </div>
-                  <div className='relative overflow-hidden aspect-video w-full rounded-xl mx-auto'>
-                    <Image
-                      src={featuredNews.imageUrl || "/hero.svg"}
-                      alt={featuredNews.title}
-                      fill
-                      className=' object-cover'
-                    />
-                    <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent' />
+
+                  <div className='flex flex-col sm:flex-row gap-3 mt-4 lg:mt-0'>
+                    <Button asChild className='group w-full sm:w-auto'>
+                      <Link href={`/news/${featuredNews.slug}`}>
+                        Read More
+                        <ArrowRight className='w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform' />
+                      </Link>
+                    </Button>
+
+                    <Button
+                      variant='outline'
+                      onClick={() => handleShare(featuredNews)}
+                      className='group w-full sm:w-auto'>
+                      <Share2 className='w-4 h-4 mr-1 group-hover:scale-110 transition-transform' />
+                      Share
+                    </Button>
                   </div>
                 </div>
               </Card>
