@@ -481,17 +481,16 @@ const RegisterModal = () => {
                     className='max-h-[200px] md:max-h-[300px] overflow-y-auto'
                     position='popper'
                     sideOffset={5}>
-                    {members
-                      .map((member) => (
-                        <SelectItem
-                          key={member._id}
-                          value={member.name}
-                          className='text-sm md:text-base'>
-                          <span className='truncate block max-w-[250px] md:max-w-[400px] capitalize'>
-                            {member.name}
-                          </span>
-                        </SelectItem>
-                      ))}
+                    {members.map((member) => (
+                      <SelectItem
+                        key={member._id}
+                        value={member.name}
+                        className='text-sm md:text-base'>
+                        <span className='truncate block max-w-[250px] md:max-w-[400px] capitalize'>
+                          {member.name}
+                        </span>
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
@@ -508,7 +507,10 @@ const RegisterModal = () => {
                 field='registrationForm'
                 label='Registration Form *'
               />
-              <FileUpload field='paymentReceipt' label='Payment Receipt *' />
+              <FileUpload
+                field='paymentReceipt'
+                label='Payment Receipt (₦50,000) *'
+              />
             </div>
 
             {/* When Established */}

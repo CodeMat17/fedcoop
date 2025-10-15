@@ -1,11 +1,12 @@
+import ConvexClientProvider from "@/components/ConvexClientProvider";
 import { Footer } from "@/components/footer";
-import { Toaster } from "@/components/ui/sonner";
 import { Navigation } from "@/components/navigation";
+import { Toaster } from "@/components/ui/sonner";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ConvexClientProvider } from "./ConvexClientProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,34 +19,45 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title:
-    "FedCoop - Federation of Federal Government Staff Cooperative Societies",
+  metadataBase: new URL("https://www.fedcoop.org"),
+  title: {
+    default:
+      "FedCoop - Federation of Federal Government Staff Cooperative Societies",
+    template: "%s | FedCoop",
+  },
   description:
     "Unifying Workers Cooperatives for a Better World through Cooperation, Collaboration, Advocacy, Peer Review, Training and Investment. A Cooperative Nigeria without Hunger & Poverty.",
+  applicationName: "FedCoop",
   keywords: [
     "FedCoop",
-    "Federation",
-    "Cooperative",
-    "Nigeria",
-    "Federal Government",
+    "Federation of Federal Cooperatives",
+    "Cooperative Society Nigeria",
+    "Federal Government Cooperatives",
     "Staff Cooperative",
-    "MDAs",
+    "MDAs Cooperative",
     "Workers Cooperative",
-    "Economic Development",
-    "NNPC",
-    "CBN",
-    "EFCC",
-    "Federal Ministry",
-    "Agriculture",
-    "Trade",
-    "Investment",
+    "Economic Development Nigeria",
+    "NNPC Cooperative",
+    "CBN Cooperative",
+    "Federal Ministry Cooperative",
+    "Cooperative Investment",
+    "Cooperative Training",
+    "Abuja Cooperative",
+    "NFVCB Cooperative",
   ],
-  authors: [{ name: "FedCoop" }],
+  authors: [{ name: "FedCoop", url: "https://www.fedcoop.org" }],
   creator: "FedCoop",
-  publisher: "FedCoop",
+  publisher: "Federation of Federal Cooperatives",
+  category: "Organization",
+  formatDetection: {
+    telephone: true,
+    email: true,
+    address: true,
+  },
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
@@ -57,7 +69,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_NG",
-    url: "https://fedcoop.ng",
+    url: "https://www.fedcoop.org",
     title:
       "FedCoop - Federation of Federal Government Staff Cooperative Societies",
     description:
@@ -65,10 +77,11 @@ export const metadata: Metadata = {
     siteName: "FedCoop",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/opengraph-image.jpg",
         width: 1200,
         height: 630,
         alt: "FedCoop - Federation of Federal Government Staff Cooperative Societies",
+        type: "image/jpeg",
       },
     ],
   },
@@ -78,13 +91,20 @@ export const metadata: Metadata = {
       "FedCoop - Federation of Federal Government Staff Cooperative Societies",
     description:
       "Unifying Workers Cooperatives for a Better World through Cooperation, Collaboration, Advocacy, Peer Review, Training and Investment.",
-    images: ["/og-image.jpg"],
+    images: ["/opengraph-image.jpg"],
+    creator: "@FedCoop",
   },
-  verification: {
-    google: "your-google-verification-code",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
+  manifest: "/manifest.webmanifest",
+
   alternates: {
-    canonical: "https://fedcoop.ng",
+    canonical: "https://www.fedcoop.org",
   },
 };
 
@@ -102,12 +122,14 @@ export default function RootLayout({
           defaultTheme='system'
           enableSystem
           disableTransitionOnChange>
-          <ConvexClientProvider>
-            <Navigation />
-            <main>{children}</main>
-            <Footer />
-            <Toaster />
-          </ConvexClientProvider>
+          <ClerkProvider>
+            <ConvexClientProvider>
+              <Navigation />
+              <main>{children}</main>
+              <Footer />
+              <Toaster />
+            </ConvexClientProvider>
+          </ClerkProvider>
         </ThemeProvider>
       </body>
     </html>

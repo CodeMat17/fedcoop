@@ -4,24 +4,24 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { ArrowLeft, Calendar, Minus, Share2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 
-export default function NewsDetailPage() {
-  const params = useParams();
-  const newsId = params.id as string;
-  const news = useQuery(api.news.getNewsById, { id: newsId as Id<"news"> });
+interface NewsDetailContentProps {
+  slug: string;
+}
+
+export default function NewsDetailContent({ slug }: NewsDetailContentProps) {
+  const news = useQuery(api.news.getNewsBySlug, { slug });
 
   // Share function
   const handleShare = async () => {
     const shareData = {
       title: news?.title || "FedCoop News",
       text: news?.title || "Check out this news article from FedCoop",
-      url: `${window.location.origin}/news/${newsId}`,
+      url: `${window.location.origin}/news/${slug}`,
     };
 
     if (navigator.share) {
@@ -158,7 +158,7 @@ export default function NewsDetailPage() {
           <Card>
             <CardContent className='p-4 sm:p-6 md:p-8'>
               <div
-                className='prose prose-sm sm:prose-base md:prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-ul:text-foreground prose-li:text-foreground'
+                className='prose prose-sm sm:prose-base md:prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-ul:text-foreground prose-li:text-foreground dark:prose-invert [&>p]:mb-4 [&>p]:leading-relaxed'
                 dangerouslySetInnerHTML={{ __html: news.body }}
               />
             </CardContent>

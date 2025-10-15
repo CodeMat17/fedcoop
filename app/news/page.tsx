@@ -32,11 +32,11 @@ export default function NewsPage() {
   const [sortBy, setSortBy] = useState("newest");
 
   // Share function
-  const handleShare = async (newsItem: { _id: string; title: string }) => {
+  const handleShare = async (newsItem: { slug: string; title: string }) => {
     const shareData = {
       title: newsItem.title,
       text: newsItem.title,
-      url: `${window.location.origin}/news/${newsItem._id}`,
+      url: `${window.location.origin}/news/${newsItem.slug}`,
     };
 
     if (navigator.share) {
@@ -157,12 +157,13 @@ export default function NewsPage() {
                         Featured
                       </Badge>
                     </div>
-                    <h3 className='text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4 leading-tight'>
+                    <h3 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 leading-tight'>
                       {featuredNews.title}
                     </h3>
-                    <p className='text-muted-foreground mb-3 leading-5 text-sm sm:text-base line-clamp-3'>
+                    {/* <p className='text-muted-foreground mb-3 leading-5 text-sm sm:text-base line-clamp-3'>
                       {featuredNews.body}
-                    </p>
+                    </p> */}
+                   
                     <div className='flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground mb-3'>
                       <div className='flex items-center gap-2'>
                         <Calendar className='w-4 h-4' />
@@ -175,7 +176,7 @@ export default function NewsPage() {
                     </div>
                     <div className='flex flex-col sm:flex-row gap-3'>
                       <Button asChild className='group w-full sm:w-auto'>
-                        <Link href={`/news/${featuredNews._id}`}>
+                        <Link href={`/news/${featuredNews.slug}`}>
                           Read More
                           <ArrowRight className='w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform' />
                         </Link>
@@ -224,7 +225,7 @@ export default function NewsPage() {
                     />
                   </div>
 
-                  <CardContent className='pt-0 pb-5 space-y-2'>
+                  <CardContent className='pt-0 pb-5 space-y-3'>
                     <div className='flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-muted-foreground'>
                       <div className='flex items-center gap-1'>
                         <Calendar className='w-3 h-3' />
@@ -237,23 +238,21 @@ export default function NewsPage() {
                     <h3 className='text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-5'>
                       {newsItem.title}
                     </h3>
-                    <p className='text-muted-foreground text-sm leading-5 line-clamp-3'>
+                    {/* <p className='text-muted-foreground text-sm leading-5 line-clamp-3'>
                       {newsItem.body}
-                    </p>
-                    <div className='flex gap-2'>
+                    </p> */}
+                    <div className='flex items-center justify-between gap-2'>
                       <Button
                         variant='outline'
                         size='sm'
                         onClick={() => handleShare(newsItem)}
-                        className='group flex-1'>
-                        <Share2 className='w-3 h-3 mr-1  group-hover:scale-110 transition-transform' />
+                        className='group '>
+                        <Share2 className='w-2 h-2 mr-1  group-hover:scale-110 transition-transform' />
                         <span>Share</span>
                       </Button>
 
-                      <Button asChild size='sm' className='group w-full'>
-                        <Link
-                          href={`/news/${newsItem._id}`}
-                          className='flex-1 sm:flex-none'>
+                      <Button asChild size='sm' className='group'>
+                        <Link href={`/news/${newsItem.slug}`}>
                           Read More
                           <ArrowRight className='w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform' />
                         </Link>

@@ -51,10 +51,8 @@ const DeleteMemberModal = ({ member }: DeleteMemberModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size='icon' variant='destructive'>
-          <Trash />
-        </Button>
+      <DialogTrigger >
+        <Trash className="w-5 h-5 text-destructive" />
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>

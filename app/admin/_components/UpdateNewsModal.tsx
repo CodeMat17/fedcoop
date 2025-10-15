@@ -305,7 +305,11 @@ const UpdateNewsModal = ({ news }: UpdateNewsModalProps) => {
                 id='title'
                 placeholder='Enter news title'
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  const newTitle = e.target.value;
+                  setTitle(newTitle);
+                  // Auto-generate slug from title
+                }}
                 maxLength={200}
               />
               <span className='text-xs text-muted-foreground'>

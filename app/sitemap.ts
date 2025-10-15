@@ -1,44 +1,55 @@
+import { api } from "@/convex/_generated/api";
+import { fetchQuery } from "convex/nextjs";
 import { MetadataRoute } from "next";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://fedcoop.ng";
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = "https://www.fedcoop.org";
 
-  return [
+  // Fetch all news articles to include in sitemap
+  const newsArticles = await fetchQuery(api.news.getAllNews);
+
+  // Static pages
+  const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
-      changeFrequency: "monthly",
+      changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: `${baseUrl}/#about`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/#cooperatives`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/#events`,
+      url: `${baseUrl}/members`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/#impact`,
+      url: `${baseUrl}/executives`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/news`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/contact`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.7,
     },
-    {
-      url: `${baseUrl}/#contact`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
   ];
+
+  // Dynamic news article pages
+  const newsPages: MetadataRoute.Sitemap = newsArticles.map((article) => ({
+    url: `${baseUrl}/news/${article.slug}`,
+    lastModified: new Date(article._creationTime),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+    images: article.imageUrl ? [article.imageUrl] : undefined,
+  }));
+
+  return [...staticPages, ...newsPages];
 }

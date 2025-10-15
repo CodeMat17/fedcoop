@@ -16,9 +16,10 @@ export default defineSchema({
   news: defineTable({
     image: v.string(),
     title: v.string(),
+    slug: v.string(),
     body: v.string(),
     featured: v.optional(v.boolean()),
-  }),
+  }).index("by_slug", ["slug"]),
 
   excos: defineTable({
     image: v.string(),

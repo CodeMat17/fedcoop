@@ -188,7 +188,7 @@ const AdminPage = () => {
       </h1>
       <div className='flex w-full  flex-col gap-6'>
         <Tabs defaultValue='members'>
-          <TabsList>
+          <TabsList className='w-full overflow-x-auto flex justify-start gap-2 scrollbar-hide'>
             <TabsTrigger value='members'>Members</TabsTrigger>
             <TabsTrigger value='registration'>Registration</TabsTrigger>
             <TabsTrigger value='news'>News</TabsTrigger>
@@ -330,7 +330,7 @@ const AdminPage = () => {
                           </p>
                         </div>
 
-                        <div className='flex gap-2 pt-2 border-t justify-end'>
+                        <div className='flex gap-x-4 pt-2 border-t justify-end items-center'>
                           <UpdateMemberModal member={member} />
                           <DeleteMemberModal member={member} />
                         </div>

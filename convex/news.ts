@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
-// Helper function to sanitize string input
+// Helper function to sanitize string input (for plain text fields)
 function sanitizeString(input: string): string {
   // Remove any HTML tags and script content
   let sanitized = input
@@ -14,6 +14,35 @@ function sanitizeString(input: string): string {
   sanitized = sanitized.replace(/[<>]/g, "").replace(/\s+/g, " ").trim();
 
   return sanitized;
+}
+
+// Helper function to sanitize HTML content (for rich text fields)
+function sanitizeHtmlBody(input: string): string {
+  // Remove script tags and other dangerous elements
+  let sanitized = input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, "")
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, "")
+    .replace(/<embed[^>]*>/gi, "")
+    .replace(/<link[^>]*>/gi, "")
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "");
+
+  // Remove dangerous event handlers and attributes
+  sanitized = sanitized
+    .replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, "")
+    .replace(/\s*on\w+\s*=\s*[^\s>]*/gi, "")
+    .replace(/javascript:/gi, "");
+
+  return sanitized.trim();
+}
+
+// Helper function to generate slug from title
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric chars with hyphens
+    .replace(/^-+|-+$/g, "") // Remove leading/trailing hyphens
+    .substring(0, 100); // Limit length
 }
 
 // Helper function to validate and sanitize title
@@ -33,14 +62,14 @@ function sanitizeTitle(title: string): string {
 
 // Helper function to validate and sanitize body
 function sanitizeBody(body: string): string {
-  const sanitized = sanitizeString(body);
+  const sanitized = sanitizeHtmlBody(body);
 
   if (!sanitized || sanitized.length === 0) {
     throw new Error("Body cannot be empty");
   }
 
-  if (sanitized.length > 10000) {
-    throw new Error("Body is too long (max 10000 characters)");
+  if (sanitized.length > 50000) {
+    throw new Error("Body is too long (max 50000 characters)");
   }
 
   return sanitized;
@@ -85,6 +114,31 @@ export const getNewsById = query({
   },
 });
 
+// Query to get a single news item by slug
+export const getNewsBySlug = query({
+  args: {
+    slug: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const newsItem = await ctx.db
+      .query("news")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .first();
+
+    if (!newsItem) {
+      return null;
+    }
+
+    // Get storage URL for image
+    const imageUrl = await ctx.storage.getUrl(newsItem.image as Id<"_storage">);
+
+    return {
+      ...newsItem,
+      imageUrl,
+    };
+  },
+});
+
 // Mutation to add a new news item
 export const addNews = mutation({
   args: {
@@ -103,9 +157,26 @@ export const addNews = mutation({
       throw new Error("Image is required");
     }
 
+    // Generate slug from title
+    const slug = generateSlug(sanitizedTitle);
+
+    // Check if slug already exists and make it unique if needed
+    let uniqueSlug = slug;
+    let counter = 1;
+    while (
+      (await ctx.db
+        .query("news")
+        .withIndex("by_slug", (q) => q.eq("slug", uniqueSlug))
+        .first()) !== null
+    ) {
+      uniqueSlug = `${slug}-${counter}`;
+      counter++;
+    }
+
     const newsId = await ctx.db.insert("news", {
       image: args.image,
       title: sanitizedTitle,
+      slug: uniqueSlug,
       body: sanitizedBody,
       featured: args.featured,
     });
@@ -137,6 +208,7 @@ export const updateNews = mutation({
     const updateData: {
       image?: string;
       title?: string;
+      slug?: string;
       body?: string;
       featured?: boolean;
     } = {};
@@ -150,6 +222,28 @@ export const updateNews = mutation({
     // Sanitize and validate title if provided
     if (title !== undefined) {
       updateData.title = sanitizeTitle(title);
+
+      // Regenerate slug if title is updated
+      const newSlug = generateSlug(updateData.title);
+
+      // Check if slug already exists (excluding current item) and make it unique if needed
+      let uniqueSlug = newSlug;
+      let counter = 1;
+      let existingSlugItem = await ctx.db
+        .query("news")
+        .withIndex("by_slug", (q) => q.eq("slug", uniqueSlug))
+        .first();
+
+      while (existingSlugItem !== null && existingSlugItem._id !== id) {
+        uniqueSlug = `${newSlug}-${counter}`;
+        counter++;
+        existingSlugItem = await ctx.db
+          .query("news")
+          .withIndex("by_slug", (q) => q.eq("slug", uniqueSlug))
+          .first();
+      }
+
+      updateData.slug = uniqueSlug;
     }
 
     // Sanitize and validate body if provided

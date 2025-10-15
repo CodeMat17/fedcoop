@@ -167,8 +167,11 @@ const UpdateMemberModal = ({ member }: UpdateMemberModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size='icon' className=''><Edit /></Button>
+      <DialogTrigger >
+        {/* <Button size='icon' className=''>
+          <Edit />
+        </Button> */}
+        <Edit className='w-5 h-5 text-amber-700 dark:text-amber-500' />
       </DialogTrigger>
       <DialogContent className='sm:max-w-[600px] max-h-[90vh] overflow-y-auto'>
         <form onSubmit={handleSubmit}>

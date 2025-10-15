@@ -34,6 +34,8 @@ const AddNewsModal = () => {
   const addNews = useMutation(api.news.addNews);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
 
+ 
+
   // Function to compress and optimize image
   const compressImage = async (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
@@ -282,7 +284,11 @@ const AddNewsModal = () => {
                 id='title'
                 placeholder='Enter news title'
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  const newTitle = e.target.value;
+                  setTitle(newTitle);
+                  // Auto-generate slug from title
+                }}
                 maxLength={200}
               />
               <span className='text-xs text-muted-foreground'>

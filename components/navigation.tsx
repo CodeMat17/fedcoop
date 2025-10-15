@@ -8,6 +8,7 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -86,13 +87,11 @@ export function Navigation() {
           </NavigationMenu>
 
           {/* Mobile Menu */}
-          <div>
+          <div className='flex items-center justify-center gap-2'>
             <ThemeToggle />
-            {/* <Button variant='outline' size='sm' onClick={toggleTheme}>
-              <Sun className='h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0' />
-              <Moon className='absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100' />
-              <span className='sr-only'>Toggle theme</span>
-            </Button> */}
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant='ghost' size='sm' className='md:hidden'>
@@ -102,13 +101,6 @@ export function Navigation() {
               </SheetTrigger>
               <SheetContent side='right' className='w-[300px] sm:w-[400px]'>
                 <div className='flex flex-col space-y-4 my-8 px-4'>
-                  {/* <div className='flex items-center space-x-2 mb-6'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground'>
-                      <Building2 className='h-5 w-5' />
-                    </div>
-                    <span className='text-lg font-bold'>FedCoop</span>
-                  </div> */}
-
                   {navigationItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -123,7 +115,7 @@ export function Navigation() {
                           <span
                             className={`font-medium ${
                               isActive
-                                ? "text-primary dark:text-primary-foreground font-semibold"
+                                ? "text-primary font-semibold"
                                 : "text-foreground"
                             }`}>
                             {item.title}

@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /no-permission
+Disallow: /api
 
-Sitemap: https://fedcoop.ng/sitemap.xml
+Sitemap: https://www.fedcoop.org/sitemap.xml

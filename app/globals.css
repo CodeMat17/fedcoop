@@ -314,4 +314,14 @@
   .ProseMirror code {
     @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
   }
+
+  /* Hide scrollbar utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
