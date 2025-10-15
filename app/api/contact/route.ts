@@ -4,17 +4,14 @@ import { ContactFormEmail } from "@/emails/contact-form-email";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-console.log(
-  "Resend key:",
-  process.env.RESEND_API_KEY ? "✅ Loaded" : "❌ Missing"
-);
+
 
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("📧 Contact form submission received");
+  
     const body = await request.json();
     const { name, email, primaryCooperative, subject, message } = body;
     console.log("Form data:", { name, email, primaryCooperative, subject });
@@ -58,7 +55,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Send email using Resend
-    console.log("📤 Sending email via Resend...");
     const { data, error } = await resend.emails.send({
       from: "FEDCOOP <contact@fedcoop.org>",
       to: ["email@fedcoop.org"],
@@ -75,7 +71,6 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      console.error("❌ Resend error:", error);
       return NextResponse.json(
         { error: "Failed to send email. Please try again." },
         { status: 500 }

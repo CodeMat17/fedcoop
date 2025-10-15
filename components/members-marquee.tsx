@@ -3,40 +3,40 @@ import { Marquee } from "./ui/marquee";
 
 const reviews = [
   {
-    name: "NFVCB",
+    name: "NFVCB Coop",
   },
   {
-    name: "CBN",
+    name: "CBN Coop",
   },
   {
-    name: "ICPC",
+    name: "ICPC Coop",
   },
   {
-    name: "NTA",
+    name: "NTA Coop",
   },
   {
-    name: "NBC",
+    name: "NBC Coop",
   },
   {
-    name: "EFCC",
+    name: "EFCC Coop",
   },
   {
-    name: "NCC",
+    name: "NCC Coop",
   },
   {
-    name: "FMD",
+    name: "FMD Coop",
   },
   {
-    name: "NNPC",
+    name: "NNPC Coop",
   },
   {
-    name: "FMAFS",
+    name: "FMAFS Coop",
   },
   {
-    name: "CBN",
+    name: "CBN Coop",
   },
   {
-    name: "FMTI",
+    name: "FMTI Coop",
   },
 ];
 

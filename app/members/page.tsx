@@ -17,6 +17,7 @@ import {
   Building2,
   CheckCircle,
   Globe,
+  Loader2,
   Mail,
   Minus,
   Phone,
@@ -78,15 +79,15 @@ export default function MembersPage() {
           <Card>
             <CardContent className='p-6 text-center'>
               <Building2 className='h-8 w-8 mx-auto mb-2 text-primary' />
-              <div className='text-2xl font-bold'>{members?.length || 0}</div>
+              <div className='text-2xl font-bold flex items-center justify-center gap-2'>{members === undefined || members === null ? <Loader2 className='w-5 h-5 animate-spin text-muted-foreground' /> : members?.length || 0}</div>
               <p className='text-sm text-muted-foreground'>Total Societies</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className='p-6 text-center'>
               <Users className='h-8 w-8 mx-auto mb-2 text-green-600' />
-              <div className='text-2xl font-bold'>
-                {totalMembers.toLocaleString()}
+              <div className='flex items-center justify-center gap-2 text-2xl font-bold'>
+                {members === undefined || members === null ? <Loader2 className='w-5 h-5 animate-spin text-muted-foreground' /> : totalMembers.toLocaleString()}
               </div>
               <p className='text-sm text-muted-foreground'>Total Members</p>
             </CardContent>
@@ -94,8 +95,8 @@ export default function MembersPage() {
           <Card>
             <CardContent className='p-6 text-center'>
               <CheckCircle className='h-8 w-8 mx-auto mb-2 text-green-600' />
-              <div className='text-2xl font-bold text-green-600'>
-                {activeCount}
+              <div className='flex items-center justify-center gap-2 text-2xl font-bold text-green-600'>
+                {members === undefined || members === null ? <Loader2 className='w-5 h-5 animate-spin text-muted-foreground' /> : activeCount}
               </div>
               <p className='text-sm text-muted-foreground'>Active Societies</p>
             </CardContent>
@@ -103,8 +104,8 @@ export default function MembersPage() {
           <Card>
             <CardContent className='p-6 text-center'>
               <XCircle className='h-8 w-8 mx-auto mb-2 text-orange-600' />
-              <div className='text-2xl font-bold text-orange-600'>
-                {inactiveCount}
+              <div className='flex items-center justify-center gap-2 text-2xl font-bold text-orange-600'>
+                {members === undefined || members === null ? <Loader2 className='w-5 h-5 animate-spin text-muted-foreground' /> : inactiveCount}
               </div>
               <p className='text-sm text-muted-foreground'>
                 Inactive Societies

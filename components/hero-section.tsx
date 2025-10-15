@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, Handshake } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { MembersMarquee } from "./members-marquee";
 
 export function HeroSection() {
@@ -42,21 +43,21 @@ export function HeroSection() {
             transition={{ duration: 0.8 }}
             className='space-y-8'>
             <div className='space-y-4'>
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className='inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium bg-primary/10 text-primary'>
                 <Handshake className='w-4 h-4 mr-2' />
                 Uniting Workers Cooperatives
-              </motion.div>
+              </motion.div> */}
 
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className='text-4xl md:text-5xl xl:text-6xl font-bold tracking-tight'>
-                Federation of Federal Government Staff Cooperatives
+                className='text-4xl md:text-5xl xl:text-6xl font-bold tracking-tight xl:mt-12'>
+                Federation of Federal Government Staff Cooperatives (FEDCOOP)
               </motion.h1>
 
               <motion.p
@@ -76,12 +77,29 @@ export function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
               className='flex flex-col sm:flex-row gap-4'>
-              <Button size='lg' className='group'>
-                Join Our Federation
-                <ArrowRight className='ml-2 h-4 w-4 transition-transform group-hover:translate-x-1' />
-              </Button>
-              <Button variant='outline' size='lg'>
-                Learn More About Us
+              <Button asChild size='lg' className='group'>
+                <Link href='/members'>
+                  <>
+                    Join Us
+                    <ArrowRight
+                      className='ml-2 h-4 w-4
+                transition-transform group-hover:translate-x-1'
+                    />
+                  </>
+                </Link>
+              </Button>                                                                                                   
+              <Button asChild variant='outline' size='lg'>
+                <Link href='/contact'>
+                  <>
+                    Contact Us
+                    <ArrowRight
+                      className='ml-2 h-4 w-4
+                transition-transform group-hover:translate-x-1'
+                    />
+                  </>
+                </Link>
+              
+               
               </Button>
             </motion.div>
           </motion.div>
@@ -95,7 +113,6 @@ export function HeroSection() {
             <div className='relative flex justify-center'>
               {/* Marquee */}
               <MembersMarquee />
-           
             </div>
           </motion.div>
         </div>
