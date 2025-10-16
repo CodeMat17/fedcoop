@@ -12,16 +12,16 @@ import {
   Twitter,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   const quickLinks = [
-    { name: "About FedCoop", href: "#about" },
-    { name: "Member Cooperatives", href: "#cooperatives" },
-    { name: "World Cooperative Day", href: "#events" },
-    { name: "Our Impact", href: "#impact" },
-    { name: "Contact Us", href: "#contact" },
+    { name: "About FedCoop", href: "/about-fedcoop" },
+    { name: "Member Cooperatives", href: "/members" },
+    { name: "Recent Events", href: "/events" },
+    { name: "Contact Us", href: "/contact" },
   ];
 
   const memberCooperatives = [
@@ -31,16 +31,22 @@ export function Footer() {
     { name: "EFCC Cooperative", href: "#" },
     { name: "FMD Cooperative", href: "#" },
     { name: "FMAFS Cooperative", href: "#" },
-    { name: "FMTI Cooperative", href: "#" },
+    { name: "See All Cooperative", href: "/members" },
   ];
 
- 
-
   const socialLinks = [
-    { name: "Facebook", icon: Facebook, href: "#" },
-    { name: "Twitter", icon: Twitter, href: "#" },
-    { name: "LinkedIn", icon: Linkedin, href: "#" },
-    { name: "Instagram", icon: Instagram, href: "#" },
+    {
+      name: "Facebook",
+      icon: Facebook,
+      href: "https://www.facebook.com/groups/530898437955565",
+    },
+    {
+      name: "Twitter",
+      icon: Twitter,
+      href: "",
+    },
+    { name: "LinkedIn", icon: Linkedin, href: "" },
+    { name: "Instagram", icon: Instagram, href: "" },
   ];
 
   return (
@@ -48,7 +54,7 @@ export function Footer() {
       <div className='container'>
         {/* Main Footer Content */}
         <div className='py-16'>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
             {/* Company Info */}
             <div className='space-y-6'>
               <div className='flex items-center space-x-3'>
@@ -76,7 +82,11 @@ export function Footer() {
                     size='sm'
                     className='w-10 h-10 p-0'
                     asChild>
-                    <a href={social.href} aria-label={social.name}>
+                    <a
+                      href={social.href}
+                      aria-label={social.name}
+                      target='_blank'
+                      rel='noreferrer'>
                       <social.icon className='h-4 w-4' />
                     </a>
                   </Button>
@@ -85,23 +95,25 @@ export function Footer() {
             </div>
 
             {/* Quick Links */}
-            <div className='space-y-6'>
-              <h4 className='text-lg font-semibold'>Quick Links</h4>
-              <ul className='space-y-3'>
-                {quickLinks.map((link) => (
-                  <li key={link.name}>
-                    <a
-                      href={link.href}
-                      className='text-sm text-muted-foreground hover:text-primary transition-colors'>
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            <div className='flex flex-col items-start md:items-center'>
+              <div className='space-y-6'>
+                <h4 className='text-lg font-semibold'>Quick Links</h4>
+                <ul className='space-y-3'>
+                  {quickLinks.map((link) => (
+                    <li key={link.name}>
+                      <a
+                        href={link.href}
+                        className='text-sm text-muted-foreground hover:text-primary transition-colors'>
+                        {link.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
             {/* Member Cooperatives */}
-            <div className='space-y-6'>
+            {/* <div className='space-y-6'>
               <h4 className='text-lg font-semibold'>Member Cooperatives</h4>
               <ul className='space-y-3'>
                 {memberCooperatives.map((coop) => (
@@ -114,10 +126,10 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </div> */}
 
             {/* Resources & Contact */}
-            <div className='space-y-6'>
+            <div className='flex flex-col items-start md:items-center'>
               {/* Contact Info */}
               <div className='space-y-4'>
                 <h4 className='text-lg font-semibold'>Contact Information</h4>
@@ -157,11 +169,12 @@ export function Footer() {
         <Separator />
 
         {/* Bottom Footer */}
-        <div className='py-8'>
-          <div className='text-sm text-muted-foreground text-center'>
+        <div className='py-8 flex flex-col items-center md:flex-row md:justify-between'>
+          <div className='text-sm text-muted-foreground'>
             © {currentYear} FedCoop - Federation of Federal Government Staff
             Cooperatives. All rights reserved.
           </div>
+          <Link href='/admin' className="text-muted-foreground text-sm font-medium">Admin</Link>
         </div>
       </div>
     </footer>

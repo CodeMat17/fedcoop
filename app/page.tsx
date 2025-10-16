@@ -28,10 +28,10 @@ export default function Home() {
     <div className='min-h-screen'>
       <HeroSection />
       <MissionVisionSection />
-      <AboutSection />
+      {/* <AboutSection /> */}
       <KeyAchievements />
       <TestimonialSection />
-      <EventGallerySection />
+      {/* <EventGallerySection /> */}
     </div>
   );
 }

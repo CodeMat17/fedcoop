@@ -27,12 +27,20 @@ export function Navigation() {
       href: "/",
     },
     {
+      title: "About Us",
+      href: "/about-fedcoop",
+    },
+    {
       title: "Members",
       href: "/members",
     },
     {
       title: "News",
       href: "/news",
+    },
+    {
+      title: "Events",
+      href: "/events",
     },
     {
       title: "Excos",

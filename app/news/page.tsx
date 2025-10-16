@@ -158,7 +158,7 @@ export default function NewsPage() {
                   </div>
 
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-6 items-center'>
-                    <div className="space-y-3">
+                    <div className='space-y-3'>
                       <h3 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight'>
                         {featuredNews.title}
                       </h3>
@@ -186,8 +186,8 @@ export default function NewsPage() {
                     </div>
                   </div>
 
-                  <div className='flex flex-col sm:flex-row gap-3 mt-4 lg:mt-0'>
-                    <Button asChild className='group w-full sm:w-auto'>
+                  <div className='flex gap-3 mt-4 lg:mt-0'>
+                    <Button asChild className='group'>
                       <Link href={`/news/${featuredNews.slug}`}>
                         Read More
                         <ArrowRight className='w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform' />
@@ -197,7 +197,7 @@ export default function NewsPage() {
                     <Button
                       variant='outline'
                       onClick={() => handleShare(featuredNews)}
-                      className='group w-full sm:w-auto'>
+                      className='group w-auto'>
                       <Share2 className='w-4 h-4 mr-1 group-hover:scale-110 transition-transform' />
                       Share
                     </Button>
@@ -244,21 +244,35 @@ export default function NewsPage() {
                       {newsItem.body}
                     </p> */}
                     <div className='flex items-center justify-between gap-2'>
-                      <Button
-                        variant='outline'
-                        size='sm'
+                      <button
                         onClick={() => handleShare(newsItem)}
-                        className='group '>
-                        <Share2 className='w-2 h-2 mr-1  group-hover:scale-110 transition-transform' />
+                        className='
+    relative flex items-center gap-1 
+    rounded-md py-2 text-sm font-medium text-foreground 
+    bg-transparent transition-all duration-500 ease-in-out 
+    group hover:bg-amber-100 hover:dark:text-gray-800
+    [--px:0rem] hover:[--px:1rem] px-[var(--px)]
+  '>
+                        <Share2 className='w-4 h-4 mr-1 transition-transform duration-500 group-hover:scale-110' />
                         <span>Share</span>
-                      </Button>
+                      </button>
 
-                      <Button asChild size='sm' className='group'>
-                        <Link href={`/news/${newsItem.slug}`}>
+                      <button
+                        className='
+    relative group 
+    rounded-md py-2 text-sm font-medium text-foreground 
+    bg-transparent 
+    transition-all duration-500 ease-in-out 
+    hover:bg-amber-100
+    [--px:0rem] hover:[--px:1rem] px-[var(--px)]
+  '>
+                        <Link
+                          href={`/news/${newsItem.slug}`}
+                          className='flex items-center gap-1 transition-all duration-500 ease-in-out text-amber-600'>
                           Read More
-                          <ArrowRight className='w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform' />
+                          <ArrowRight className='w-3 h-3 ml-1 transform transition-transform duration-500 ease-in-out group-hover:translate-x-1' />
                         </Link>
-                      </Button>
+                      </button>
                     </div>
                   </CardContent>
                 </Card>
