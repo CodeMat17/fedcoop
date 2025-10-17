@@ -40,9 +40,7 @@ export function MissionVisionSection() {
                 <p className='text-muted-foreground leading-relaxed'>
                   Unify Workers Cooperatives for a Better World through
                   Cooperation, Collaboration, Advocacy, Peer Review, Training
-                  and Investment. We are committed to strengthening the
-                  cooperative ecosystem across Nigeria&apos;s federal government
-                  institutions.
+                  and Investment.
                 </p>
               </CardContent>
             </Card>
@@ -62,10 +60,7 @@ export function MissionVisionSection() {
                   <h3 className='text-2xl font-bold'>Our Vision</h3>
                 </div>
                 <p className='text-muted-foreground leading-relaxed'>
-                  A Cooperative Nigeria without Hunger & Poverty. Building a
-                  sustainable future through unity and collaboration where every
-                  worker has access to financial security, economic empowerment,
-                  and shared prosperity.
+                  A Cooperative Nigeria without Hunger & Poverty. 
                 </p>
               </CardContent>
             </Card>

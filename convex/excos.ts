@@ -2,175 +2,136 @@ import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
-// Helper function to sanitize string input
-function sanitizeString(input: string): string {
-  // Remove any HTML tags and script content
+// --- Helper: sanitize string safely ---
+function sanitizeString(input?: string): string {
+  if (!input) return ""; // prevent undefined errors
+
   let sanitized = input
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
     .replace(/<[^>]*>/g, "")
     .trim();
 
-  // Remove potentially dangerous characters and normalize whitespace
   sanitized = sanitized.replace(/[<>]/g, "").replace(/\s+/g, " ").trim();
-
   return sanitized;
 }
 
-// Helper function to validate storage ID
+// --- Helper: validate storage ID ---
 function validateStorageId(storageId: string): void {
-  // Check if it looks like a valid Convex storage ID
   if (!storageId || storageId.trim().length === 0) {
     throw new Error("Storage ID is required");
   }
-
-  // Storage IDs should not contain dangerous characters
   if (/<|>|script|javascript:/i.test(storageId)) {
     throw new Error("Invalid storage ID format");
   }
 }
 
-// Query to get all excos
+// --- Query: Get all excos ---
 export const getExcos = query({
   handler: async (ctx) => {
     const excos = await ctx.db.query("excos").collect();
 
-    // Get storage URLs for images
-    const excosWithUrls = await Promise.all(
+    return await Promise.all(
       excos.map(async (item) => ({
         ...item,
-        imageUrl: await ctx.storage.getUrl(item.image as Id<"_storage">),
+        imageUrl: item.image
+          ? await ctx.storage.getUrl(item.image as Id<"_storage">)
+          : null,
       }))
     );
-
-    return excosWithUrls;
   },
 });
 
-// Mutation to add a new exco
+// --- Mutation: Add new exco ---
 export const addExcos = mutation({
   args: {
-    image: v.string(), // Storage ID
+    image: v.optional(v.string()),
     name: v.string(),
     position: v.string(),
+    description: v.string(),
   },
   handler: async (ctx, args) => {
-    // Validate and sanitize storage ID
-    validateStorageId(args.image);
+    // validateStorageId(args.image || '');
 
-    // Sanitize and validate name
-    const sanitizedName = sanitizeString(args.name);
-    if (!sanitizedName || sanitizedName.length === 0) {
-      throw new Error("Name is required");
-    }
-    if (sanitizedName.length > 100) {
-      throw new Error("Name is too long (max 100 characters)");
-    }
+    const name = sanitizeString(args.name);
+    const position = sanitizeString(args.position);
+    const description = sanitizeString(args.description);
 
-    // Sanitize and validate position
-    const sanitizedPosition = sanitizeString(args.position);
-    if (!sanitizedPosition || sanitizedPosition.length === 0) {
-      throw new Error("Position is required");
-    }
-    if (sanitizedPosition.length > 100) {
-      throw new Error("Position is too long (max 100 characters)");
-    }
+    if (!name) throw new Error("Name is required");
+    if (!position) throw new Error("Position is required");
+    if (name.length > 100) throw new Error("Name too long (max 100 chars)");
+    if (position.length > 100)
+      throw new Error("Position too long (max 100 chars)");
 
-    const excoId = await ctx.db.insert("excos", {
-      image: args.image,
-      name: sanitizedName,
-      position: sanitizedPosition,
+    return await ctx.db.insert("excos", {
+      image: args.image ?? undefined,
+      name,
+      position,
+      description,
     });
-
-    return excoId;
   },
 });
 
-// Mutation to update an exco
+// --- Mutation: Update exco ---
 export const updateExcos = mutation({
   args: {
     id: v.id("excos"),
-    image: v.optional(v.string()), // Storage ID (optional)
+    image: v.optional(v.string()),
     name: v.optional(v.string()),
     position: v.optional(v.string()),
+    description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { id, image, name, position } = args;
+    const existing = await ctx.db.get(args.id);
+    if (!existing) throw new Error("Exco not found");
 
-    // Get the existing exco
-    const existingItem = await ctx.db.get(id);
+    const updateData: Partial<{
+      image: string;
+      name: string;
+      position: string;
+      description: string;
+    }> = {};
 
-    if (!existingItem) {
-      throw new Error("Exco not found");
+    if (args.image && args.image !== existing.image) {
+      validateStorageId(args.image);
+      await ctx.storage.delete(existing.image as Id<"_storage">);
+      updateData.image = args.image;
     }
 
-    // Prepare update object
-    const updateData: {
-      image?: string;
-      name?: string;
-      position?: string;
-    } = {};
-
-    // If image is being updated, validate and delete the old image from storage
-    if (image && image !== existingItem.image) {
-      validateStorageId(image);
-      await ctx.storage.delete(existingItem.image as Id<"_storage">);
-      updateData.image = image;
+    if (args.name !== undefined) {
+      const name = sanitizeString(args.name);
+      if (!name) throw new Error("Name cannot be empty");
+      if (name.length > 100) throw new Error("Name too long");
+      updateData.name = name;
     }
 
-    // Update name if provided
-    if (name !== undefined) {
-      const sanitizedName = sanitizeString(name);
-      if (!sanitizedName || sanitizedName.length === 0) {
-        throw new Error("Name cannot be empty");
-      }
-      if (sanitizedName.length > 100) {
-        throw new Error("Name is too long (max 100 characters)");
-      }
-      updateData.name = sanitizedName;
+    if (args.position !== undefined) {
+      const position = sanitizeString(args.position);
+      if (!position) throw new Error("Position cannot be empty");
+      if (position.length > 100) throw new Error("Position too long");
+      updateData.position = position;
     }
 
-    // Update position if provided
-    if (position !== undefined) {
-      const sanitizedPosition = sanitizeString(position);
-      if (!sanitizedPosition || sanitizedPosition.length === 0) {
-        throw new Error("Position cannot be empty");
-      }
-      if (sanitizedPosition.length > 100) {
-        throw new Error("Position is too long (max 100 characters)");
-      }
-      updateData.position = sanitizedPosition;
+    if (args.description !== undefined) {
+      updateData.description = sanitizeString(args.description);
     }
 
-    // Only update if there are changes
     if (Object.keys(updateData).length > 0) {
-      await ctx.db.patch(id, updateData);
+      await ctx.db.patch(args.id, updateData);
     }
 
     return { success: true };
   },
 });
 
-// Mutation to delete an exco
+// --- Mutation: Delete exco ---
 export const deleteExcos = mutation({
-  args: {
-    id: v.id("excos"),
-  },
+  args: { id: v.id("excos") },
   handler: async (ctx, args) => {
-    const { id } = args;
+    const item = await ctx.db.get(args.id);
+    if (!item) throw new Error("Exco not found");
 
-    // Get the exco
-    const item = await ctx.db.get(id);
-
-    if (!item) {
-      throw new Error("Exco not found");
-    }
-
-    // Delete the image from storage
     await ctx.storage.delete(item.image as Id<"_storage">);
-
-    // Delete the exco from database
-    await ctx.db.delete(id);
-
+    await ctx.db.delete(args.id);
     return { success: true };
   },
 });

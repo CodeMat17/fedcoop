@@ -43,17 +43,17 @@ export function Navigation() {
       href: "/events",
     },
     {
-      title: "Excos",
-      href: "/executives",
+      title: "Directors",
+      href: "/directors",
     },
     {
       title: "Contact",
       href: "/contact",
     },
-    {
-      title: "Admin",
-      href: "/admin",
-    },
+    // {
+    //   title: "Admin",
+    //   href: "/admin",
+    // },
   ];
 
   // const toggleTheme = () => {

@@ -25,7 +25,8 @@ interface ExcoItem {
   _id: Id<"excos">;
   name: string;
   position: string;
-  image: string;
+  description: string;
+  image?: string;
   imageUrl: string | null;
 }
 
@@ -37,6 +38,7 @@ const UpdateExcoModal = ({ exco }: UpdateExcoModalProps) => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(exco.name);
   const [position, setPosition] = useState(exco.position);
+  const [description, setDescription] = useState(exco.description ?? '');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
     exco.imageUrl
@@ -51,6 +53,7 @@ const UpdateExcoModal = ({ exco }: UpdateExcoModalProps) => {
     if (open) {
       setName(exco.name);
       setPosition(exco.position);
+      setDescription(exco.description ?? '');
       setImageFile(null);
       setImagePreview(exco.imageUrl);
     }
@@ -190,6 +193,7 @@ const UpdateExcoModal = ({ exco }: UpdateExcoModalProps) => {
     // Frontend validation and sanitization
     const sanitizedName = sanitizeInput(name);
     const sanitizedPosition = sanitizeInput(position);
+    const sanitizedDescription = sanitizeInput(description);
 
     if (!sanitizedName.trim()) {
       toast.error("Please enter a name");
@@ -242,6 +246,7 @@ const UpdateExcoModal = ({ exco }: UpdateExcoModalProps) => {
         image: imageFile ? storageId : undefined,
         name: sanitizedName,
         position: sanitizedPosition,
+        description: sanitizedDescription,
       });
 
       toast.success("Executive updated successfully!");
@@ -345,6 +350,22 @@ const UpdateExcoModal = ({ exco }: UpdateExcoModalProps) => {
               />
               <span className='text-xs text-muted-foreground'>
                 {position.length}/100 characters
+              </span>
+            </div>
+
+            {/* Description */}
+            <div className='grid gap-3'>
+              <Label htmlFor='description'>Organization Coop/Post*</Label>
+              <Input
+                id='description'
+                placeholder='e.g., PRO, EFCC Cooperative'
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={150}
+                required
+              />
+              <span className='text-xs text-muted-foreground'>
+                {description?.length}/150 characters
               </span>
             </div>
           </div>

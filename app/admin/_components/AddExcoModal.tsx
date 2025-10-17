@@ -24,6 +24,7 @@ const AddExcoModal = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [position, setPosition] = useState("");
+  const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,12 +32,11 @@ const AddExcoModal = () => {
   const addExcos = useMutation(api.excos.addExcos);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
 
-  // Function to compress and optimize image for profile photos
+  // --- Image compression (unchanged)
   const compressImage = async (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-
       reader.onload = (event) => {
         const img = new window.Image();
         img.src = event.target?.result as string;
@@ -44,26 +44,15 @@ const AddExcoModal = () => {
         img.onload = () => {
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
+          if (!ctx) return reject(new Error("Canvas not supported"));
 
-          if (!ctx) {
-            reject(new Error("Could not get canvas context"));
-            return;
-          }
-
-          // Set square dimensions for profile photos (500x500)
           const SIZE = 500;
-          const width = img.width;
-          const height = img.height;
-
-          // Calculate dimensions to crop to square
-          const minDimension = Math.min(width, height);
-          const cropX = (width - minDimension) / 2;
-          const cropY = (height - minDimension) / 2;
-
+          const minDimension = Math.min(img.width, img.height);
+          const cropX = (img.width - minDimension) / 2;
+          const cropY = (img.height - minDimension) / 2;
           canvas.width = SIZE;
           canvas.height = SIZE;
 
-          // Draw image on canvas with high quality
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = "high";
           ctx.drawImage(
@@ -78,31 +67,21 @@ const AddExcoModal = () => {
             SIZE
           );
 
-          // Convert to blob with compression
           canvas.toBlob(
             (blob) => {
-              if (!blob) {
-                reject(new Error("Could not compress image"));
-                return;
-              }
-
-              // Create optimized file
-              const compressedFile = new File([blob], file.name, {
+              if (!blob) return reject(new Error("Could not compress image"));
+              const compressed = new File([blob], file.name, {
                 type: "image/jpeg",
                 lastModified: Date.now(),
               });
-
-              resolve(compressedFile);
+              resolve(compressed);
             },
             "image/jpeg",
-            0.9 // Higher quality for profile photos
+            0.9
           );
         };
-
-        img.onerror = () => reject(new Error("Could not load image"));
       };
-
-      reader.onerror = () => reject(new Error("Could not read file"));
+      reader.onerror = () => reject(new Error("File read error"));
     });
   };
 
@@ -110,38 +89,28 @@ const AddExcoModal = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
       return;
     }
-
-    // Validate file size (max 5MB before compression)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size should be less than 5MB");
+      toast.error("Image must be less than 5MB");
       return;
     }
 
     try {
-      // Compress and optimize image
       const compressedFile = await compressImage(file);
-
-      // Show compression success message
       const originalSize = (file.size / 1024 / 1024).toFixed(2);
       const compressedSize = (compressedFile.size / 1024 / 1024).toFixed(2);
       toast.success(`Image optimized: ${originalSize}MB → ${compressedSize}MB`);
-
       setImageFile(compressedFile);
 
-      // Create preview from compressed file
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
+      reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(compressedFile);
-    } catch (error) {
-      console.error("Error compressing image:", error);
-      toast.error("Failed to optimize image. Please try another image.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to optimize image. Try another image.");
     }
   };
 
@@ -150,7 +119,6 @@ const AddExcoModal = () => {
     setImagePreview(null);
   };
 
-  // Sanitize input on the frontend (additional layer before backend validation)
   const sanitizeInput = (input: string): string => {
     return input
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
@@ -162,75 +130,58 @@ const AddExcoModal = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Frontend validation and sanitization
     const sanitizedName = sanitizeInput(name);
     const sanitizedPosition = sanitizeInput(position);
+    const sanitizedDescription = sanitizeInput(description);
 
-    if (!sanitizedName.trim()) {
-      toast.error("Please enter a name");
-      return;
-    }
+    if (!sanitizedName.trim()) return toast.error("Please enter a name");
+    if (sanitizedName.length > 100)
+      return toast.error("Name too long (max 100 chars)");
 
-    if (sanitizedName.length > 100) {
-      toast.error("Name is too long (max 100 characters)");
-      return;
-    }
+    if (!sanitizedPosition.trim())
+      return toast.error("Please enter a position");
+    if (sanitizedPosition.length > 100)
+      return toast.error("Position too long (max 100 chars)");
 
-    if (!sanitizedPosition.trim()) {
-      toast.error("Please enter a position");
-      return;
-    }
-
-    if (sanitizedPosition.length > 100) {
-      toast.error("Position is too long (max 100 characters)");
-      return;
-    }
-
-    if (!imageFile) {
-      toast.error("Please select an image");
-      return;
-    }
+    if (!sanitizedDescription.trim())
+      return toast.error("Please enter an organization/post");
 
     setIsSubmitting(true);
 
     try {
-      // Step 1: Get upload URL
-      const uploadUrl = await generateUploadUrl();
+      let storageId: string | undefined;
 
-      // Step 2: Upload image to Convex storage
-      const result = await fetch(uploadUrl, {
-        method: "POST",
-        headers: { "Content-Type": imageFile.type },
-        body: imageFile,
-      });
-
-      if (!result.ok) {
-        throw new Error("Failed to upload image");
+      // Image is optional
+      if (imageFile) {
+        const uploadUrl = await generateUploadUrl();
+        const upload = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": imageFile.type },
+          body: imageFile,
+        });
+        if (!upload.ok) throw new Error("Image upload failed");
+        const data = await upload.json();
+        storageId = data.storageId;
       }
 
-      const { storageId } = await result.json();
-
-      // Step 3: Create executive with storage ID (backend will re-sanitize)
       await addExcos({
-        image: storageId,
+        image: storageId || undefined,
         name: sanitizedName,
         position: sanitizedPosition,
+        description: sanitizedDescription,
       });
 
       toast.success("Executive added successfully!");
-
-      // Reset form
       setName("");
       setPosition("");
+      setDescription("");
       setImageFile(null);
       setImagePreview(null);
       setOpen(false);
     } catch (error) {
-      console.error("Error adding executive:", error);
+      console.error(error);
       toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to add executive. Please try again."
+        error instanceof Error ? error.message : "Failed to add executive"
       );
     } finally {
       setIsSubmitting(false);
@@ -247,14 +198,14 @@ const AddExcoModal = () => {
           <DialogHeader>
             <DialogTitle>Add Executive</DialogTitle>
             <DialogDescription>
-              Add a new executive member. All fields are required.
+              Name, position, and organization are required. Image is optional.
             </DialogDescription>
           </DialogHeader>
 
           <div className='grid gap-4 py-4'>
-            {/* Image Upload */}
+            {/* Optional Image Upload */}
             <div className='grid gap-3'>
-              <Label htmlFor='image'>Profile Photo *</Label>
+              <Label htmlFor='image'>Profile Photo (optional)</Label>
               {!imagePreview ? (
                 <div className='border-2 border-dashed rounded-lg p-6 hover:border-primary transition-colors'>
                   <label
@@ -262,10 +213,10 @@ const AddExcoModal = () => {
                     className='flex flex-col items-center gap-2 cursor-pointer'>
                     <ImagePlus className='w-8 h-8 text-muted-foreground' />
                     <span className='text-sm text-muted-foreground'>
-                      Click to upload profile photo
+                      Click to upload (optional)
                     </span>
                     <span className='text-xs text-muted-foreground'>
-                      Max 5MB • Auto-cropped to 500x500px square
+                      Max 5MB • Auto-cropped to 500x500px
                     </span>
                   </label>
                   <Input
@@ -318,13 +269,28 @@ const AddExcoModal = () => {
               <Label htmlFor='position'>Position *</Label>
               <Input
                 id='position'
-                placeholder='e.g., President, Vice President, Secretary'
+                placeholder='e.g., President, Secretary'
                 value={position}
                 onChange={(e) => setPosition(e.target.value)}
                 maxLength={100}
               />
               <span className='text-xs text-muted-foreground'>
                 {position.length}/100 characters
+              </span>
+            </div>
+
+            {/* Description */}
+            <div className='grid gap-3'>
+              <Label htmlFor='description'>Organization Coop/Post *</Label>
+              <Input
+                id='description'
+                placeholder='e.g., PRO, EFCC Cooperative'
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={150}
+              />
+              <span className='text-xs text-muted-foreground'>
+                {description.length}/150 characters
               </span>
             </div>
           </div>

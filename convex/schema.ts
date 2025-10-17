@@ -22,9 +22,10 @@ export default defineSchema({
   }).index("by_slug", ["slug"]),
 
   excos: defineTable({
-    image: v.string(),
+    image: v.optional(v.string()),
     name: v.string(),
     position: v.string(),
+    description: v.string(),
   }),
 
   registration: defineTable({

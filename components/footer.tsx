@@ -21,18 +21,19 @@ export function Footer() {
     { name: "About FedCoop", href: "/about-fedcoop" },
     { name: "Member Cooperatives", href: "/members" },
     { name: "Recent Events", href: "/events" },
+    { name: "Board of Directors", href: "/directors" },
     { name: "Contact Us", href: "/contact" },
   ];
 
-  const memberCooperatives = [
-    { name: "NFVCB Cooperative", href: "#" },
-    { name: "NNPC Cooperative", href: "#" },
-    { name: "CBN Cooperative", href: "#" },
-    { name: "EFCC Cooperative", href: "#" },
-    { name: "FMD Cooperative", href: "#" },
-    { name: "FMAFS Cooperative", href: "#" },
-    { name: "See All Cooperative", href: "/members" },
-  ];
+  // const memberCooperatives = [
+  //   { name: "NFVCB Cooperative", href: "#" },
+  //   { name: "NNPC Cooperative", href: "#" },
+  //   { name: "CBN Cooperative", href: "#" },
+  //   { name: "EFCC Cooperative", href: "#" },
+  //   { name: "FMD Cooperative", href: "#" },
+  //   { name: "FMAFS Cooperative", href: "#" },
+  //   { name: "See All Cooperative", href: "/members" },
+  // ];
 
   const socialLinks = [
     {
@@ -148,7 +149,7 @@ export function Footer() {
                     <a
                       href='tel:+2341234567890'
                       className='text-sm text-muted-foreground hover:text-primary transition-colors'>
-                      +234 (0) 123 456 7890
+                      +234 (0) 916 248 4000
                     </a>
                   </div>
 
@@ -157,7 +158,7 @@ export function Footer() {
                     <a
                       href='mailto:info@fedcoop.ng'
                       className='text-sm text-muted-foreground hover:text-primary transition-colors'>
-                      info@fedcoop.ng
+                      email@fedcoop.org
                     </a>
                   </div>
                 </div>
@@ -169,12 +170,16 @@ export function Footer() {
         <Separator />
 
         {/* Bottom Footer */}
-        <div className='py-8 flex flex-col items-center md:flex-row md:justify-between'>
-          <div className='text-sm text-muted-foreground'>
+        <div className='py-8 flex flex-col items-center md:flex-row md:justify-between gap-4'>
+          <div className='text-sm text-center text-muted-foreground'>
             © {currentYear} FedCoop - Federation of Federal Government Staff
             Cooperatives. All rights reserved.
           </div>
-          <Link href='/admin' className="text-muted-foreground text-sm font-medium">Admin</Link>
+          <Link
+            href='/admin'
+            className='text-muted-foreground text-sm font-medium'>
+            Admin
+          </Link>
         </div>
       </div>
     </footer>

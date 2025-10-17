@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Minus } from "lucide-react";
 
-const ExecutivesPage = () => {
+const DirectorsPage = () => {
   const executives = useQuery(api.excos.getExcos);
 
   return (
@@ -26,7 +26,7 @@ const ExecutivesPage = () => {
       <div className='w-full max-w-6xl mx-auto px-4 pt-24 pb-12 relative z-10'>
         <div className='text-center mb-20'>
           <h1 className='text-5xl md:text-6xl font-bold text-foreground mb-6'>
-            FedCoop Executives
+            FedCoop Board of Directors
           </h1>
           <p className='text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
             Meet the dedicated leaders serving FedCoop&apos;s members and
@@ -37,12 +37,12 @@ const ExecutivesPage = () => {
         {executives === undefined ? (
           <div className='flex items-center justify-center px-4 py-32'>
             {" "}
-            <Minus className='w-4 h-4 animate-spin mr-2' /> loading executives
+            <Minus className='w-4 h-4 animate-spin mr-2' /> loading Directors
             profile
           </div>
         ) : executives.length === 0 ? (
           <div className='text-center px-4 py-32'>
-            No executive profile found
+            No Director profile found
           </div>
         ) : (
           <div>
@@ -68,7 +68,7 @@ const ExecutivesPage = () => {
                     {/* Photo */}
                     <div className='relative mb-3'>
                       <div className='absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500'></div>
-                      <Avatar className='w-64 h-64 border-4 border-white shadow-2xl group-hover:scale-105 transition-all duration-500'>
+                      <Avatar className={`w-64 h-64 border-4 ${executive.position === 'President' ? 'border-amber-500/60' : 'border-white'} shadow-2xl group-hover:scale-105 transition-all duration-500`}>
                         <AvatarImage
                           src={executive.imageUrl || undefined}
                           alt={executive.name}
@@ -84,12 +84,15 @@ const ExecutivesPage = () => {
                     </div>
 
                     {/* Name and Position */}
-                    <div className='text-center space-y-2'>
+                    <div className='text-center'>
                       <h3 className='text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300'>
                         {executive.name}
                       </h3>
                       <p className='text-muted-foreground text-lg'>
                         {executive.position}
+                      </p>
+                      <p className='text-muted-foreground text-sm'>
+                        {executive.description}
                       </p>
                     </div>
                   </div>
@@ -111,7 +114,7 @@ const ExecutivesPage = () => {
                     Leadership Structure
                   </h2>
                   <p className='text-muted-foreground leading-relaxed text-lg max-w-4xl mx-auto'>
-                    Our executives consists of dedicated members elected by the
+                    Our Directors consists of dedicated members elected by the
                     cooperative&apos;s membership. Each position plays a crucial
                     role in ensuring the smooth operation and growth of FedCoop,
                     serving our members with integrity, transparency, and
@@ -140,4 +143,4 @@ const ExecutivesPage = () => {
   );
 };
 
-export default ExecutivesPage;
+export default DirectorsPage;

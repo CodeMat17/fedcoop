@@ -25,7 +25,7 @@ const EventsPage = () => {
        {gallery === undefined ? (
          <div className='flex items-center justify-center py-32'>
            <Minus className='w-4 h-4 animate-spin mr-2' />
-           Loading gallery...
+           Loading events...
          </div>
        ) : gallery.length === 0 ? (
          <div className='text-center py-32'>No event items found</div>

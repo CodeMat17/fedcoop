@@ -192,7 +192,8 @@ const AdminPage = () => {
             <TabsTrigger value='members'>Members</TabsTrigger>
             <TabsTrigger value='registration'>Registration</TabsTrigger>
             <TabsTrigger value='news'>News</TabsTrigger>
-            <TabsTrigger value='excos'>Excos</TabsTrigger>
+            <TabsTrigger value='directors'>Directors</TabsTrigger>
+            <TabsTrigger value='events'>Events</TabsTrigger>
             <TabsTrigger value='testimonials'>Testimonials</TabsTrigger>
           </TabsList>
           <TabsContent value='members'>
@@ -628,10 +629,10 @@ const AdminPage = () => {
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value='excos'>
+          <TabsContent value='directors'>
             <Card>
               <CardHeader className='flex  items-center justify-between'>
-                <CardTitle className='text-2xl'>Executives</CardTitle>
+                <CardTitle className='text-2xl'>Directors</CardTitle>
 
                 <AddExcoModal />
               </CardHeader>
@@ -639,7 +640,7 @@ const AdminPage = () => {
                 {excos === undefined ? (
                   <div className='flex px-4 py-32 items-center justify-center'>
                     <Minus className='w-4 h-4 animate-spin mr-2' />
-                    Loading executives...
+                    Loading Directors...
                   </div>
                 ) : excos.length === 0 ? (
                   <div className='text-center px-4 py-32 animate-pulse'>
@@ -659,10 +660,13 @@ const AdminPage = () => {
                             className='object-cover'
                           />
                         </div>
-                        <div className='space-y-2 flex-1'>
+                        <div className='flex-1'>
                           <h3 className='text-lg font-semibold'>{exco.name}</h3>
                           <p className='text-sm text-muted-foreground'>
                             {exco.position}
+                          </p>
+                          <p className='text-sm text-muted-foreground'>
+                            {exco.description}
                           </p>
                         </div>
                         <div className='flex justify-between gap-2 w-full pt-2'>
@@ -676,7 +680,9 @@ const AdminPage = () => {
               </CardContent>
             </Card>
           </TabsContent>
-
+          <TabsContent value='events'>
+          <div className="px-4 py-32 text-center">Coming Soon!</div>
+          </TabsContent>
           <TabsContent value='testimonials'>
             <Card>
               <CardHeader className='flex  items-center justify-between'>
