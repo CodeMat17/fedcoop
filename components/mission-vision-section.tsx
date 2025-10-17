@@ -38,9 +38,9 @@ export function MissionVisionSection() {
                   <h3 className='text-2xl font-bold'>Our Mission</h3>
                 </div>
                 <p className='text-muted-foreground leading-relaxed'>
-                  Unify Workers Cooperatives for a Better World through
-                  Cooperation, Collaboration, Advocacy, Peer Review, Training
-                  and Investment.
+                  To unify Workers Cooperatives for a Better World through
+                  Cooperation, Collaboration, Advocacy, Peer Review, Training, Savings
+                  and Investments.
                 </p>
               </CardContent>
             </Card>

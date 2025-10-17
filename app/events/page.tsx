@@ -13,7 +13,7 @@ const EventsPage = () => {
 
   return (
     <section className='pt-24 pb-16 bg-gradient-to-b from-background to-muted/20'>
-      <div className='w-full max-w-7xl mx-auto px-4'>
+      <div className='w-full max-w-7xl mx-auto px-'>
         <div className='text-center mb-16'>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
