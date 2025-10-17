@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 interface Gallery {
   _id: string;
   image: string;
+  imageUrl: string;
   description: string;
 }
 
@@ -60,7 +61,7 @@ export function EventCarousel({ gallery }: GalleryCarouselProps) {
               {/* Background image */}
               <div className='absolute inset-0 transform transition-transform duration-1000 hover:scale-105'>
                 <Image
-                  src={event.image}
+                  src={event.imageUrl}
                   alt={event._id}
                   fill
                   priority={index === 0}

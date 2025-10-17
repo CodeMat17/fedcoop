@@ -23,6 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import EventsGalleryContent from '@/app/admin/_components/EventsGalleryContent'
 import { useMutation, useQuery } from "convex/react";
 import dayjs from "dayjs";
 import { Loader2, Minus, Search, X } from "lucide-react";
@@ -681,7 +682,7 @@ const AdminPage = () => {
             </Card>
           </TabsContent>
           <TabsContent value='events'>
-          <div className="px-4 py-32 text-center">Coming Soon!</div>
+         <EventsGalleryContent  />
           </TabsContent>
           <TabsContent value='testimonials'>
             <Card>
