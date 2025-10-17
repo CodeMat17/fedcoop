@@ -1,15 +1,16 @@
+// components/ui/event-carousel.tsx
 "use client";
 
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
 interface Gallery {
   _id: string;
   image: string;
-  imageUrl: string;
+  imageUrl: string | null; // Allow null
   description: string;
 }
 
@@ -39,6 +40,20 @@ export function EventCarousel({ gallery }: GalleryCarouselProps) {
     };
   }, [emblaApi, onSelect]);
 
+  // Filter out items without imageUrl to prevent errors
+  const validGalleryItems = gallery.filter((item) => item.imageUrl);
+
+  if (validGalleryItems.length === 0) {
+    return (
+      <div className='relative h-[500px] md:h-[450px] lg:h-[450px] w-full overflow-hidden rounded-lg shadow-2xl flex items-center justify-center bg-muted'>
+        <div className='text-center'>
+          <ImageIcon className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
+          <p className='text-muted-foreground'>No images available</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='relative h-[500px] md:h-[450px] lg:h-[450px] w-full overflow-hidden rounded-lg shadow-2xl'>
       <style jsx>{`
@@ -56,13 +71,13 @@ export function EventCarousel({ gallery }: GalleryCarouselProps) {
 
       <div ref={emblaRef} className='embla h-full w-full '>
         <div className='embla__container h-full'>
-          {gallery.map((event, index) => (
+          {validGalleryItems.map((event, index) => (
             <div key={event._id} className='embla__slide relative h-full'>
               {/* Background image */}
               <div className='absolute inset-0 transform transition-transform duration-1000 hover:scale-105'>
                 <Image
-                  src={event.imageUrl}
-                  alt={event._id}
+                  src={event.imageUrl!} // We know it's not null due to filtering
+                  alt={event.description || "Event image"}
                   fill
                   priority={index === 0}
                   className='object-cover'
@@ -80,7 +95,7 @@ export function EventCarousel({ gallery }: GalleryCarouselProps) {
                 </div>
                 <div className='h-px w-16 bg-amber-400 mx-4 shadow-lg' />
                 <div className='text-lg font-light text-white drop-shadow-xl'>
-                  {String(gallery.length).padStart(2, "0")}
+                  {String(validGalleryItems.length).padStart(2, "0")}
                 </div>
               </div>
 
@@ -98,12 +113,12 @@ export function EventCarousel({ gallery }: GalleryCarouselProps) {
 
       {/* Navigation Arrows */}
       <button
-        onClick={() => emblaApi && emblaApi.scrollNext()}
+        onClick={() => emblaApi && emblaApi.scrollPrev()}
         className='absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white p-3 rounded-full z-10 transition-all duration-300 shadow-lg'>
         <ChevronLeft size={28} strokeWidth={1.5} />
       </button>
       <button
-        onClick={() => emblaApi && emblaApi.scrollPrev()}
+        onClick={() => emblaApi && emblaApi.scrollNext()}
         className='absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white p-3 rounded-full z-10 transition-all duration-300 shadow-lg'>
         <ChevronRight size={28} strokeWidth={1.5} />
       </button>
