@@ -76,7 +76,7 @@ export default function GalleryAdminPage() {
       ) : (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
           {gallery.map((item) => (
-            <Card key={item._id} className='overflow-hidden group'>
+            <Card key={item._id} className='overflow-hidden group py-0'>
               <div className='aspect-square relative bg-muted'>
                 {item.imageUrl ? (
                   <Image
@@ -92,7 +92,7 @@ export default function GalleryAdminPage() {
                 )}
               </div>
 
-              <CardContent className='p-4 space-y-3'>
+              <CardContent className='px-4 pb-4 space-y-3'>
                 <p className='text-sm text-muted-foreground line-clamp-2'>
                   {item.description}
                 </p>

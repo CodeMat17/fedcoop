@@ -264,7 +264,7 @@ const UpdateGalleryModal = ({
                   />
                 </div>
               ) : (
-                <div className='relative mx-auto'>
+                <div className='relative'>
                   <div className='relative w-full h-64 rounded-lg overflow-hidden border-4 border-muted'>
                     <Image
                       src={imagePreview}
