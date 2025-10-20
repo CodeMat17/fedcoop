@@ -62,7 +62,7 @@ export function Footer() {
                 <Image src='/logo.webp' alt='FedCoop' width={52} height={52} />
 
                 <div>
-                  <h3 className='text-xl font-bold'>FedCoop</h3>
+                  <h3 className='text-xl font-bold'>FEDCOOP</h3>
                   <p className='text-sm text-muted-foreground'>
                     Federation of Federal Government Staff Cooperatives
                   </p>

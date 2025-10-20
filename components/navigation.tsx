@@ -68,7 +68,7 @@ export function Navigation() {
           <Link href='/'>
             <div className='flex items-center space-x-2'>
               <Image src='/logo.webp' alt='FedCoop' width={50} height={50} />
-              <span className='text-xl font-bold'>FedCoop</span>
+              <span className='text-xl font-bold'>FEDCOOP</span>
             </div>
           </Link>
 
