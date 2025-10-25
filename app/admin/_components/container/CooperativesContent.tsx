@@ -65,12 +65,12 @@ const CooperativesContent = () => {
   };
 
   return (
-    <Card>
-      <CardHeader className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
-        <CardTitle className='text-xl sm:text-2xl'>Cooperatives</CardTitle>
+    <div>
+      <div className='flex flex-col sm:flex-row items-center justify-between gap-4 py-5'>
+        <h1 className='text-2xl sm:text-3xl font-semibold'>Cooperatives</h1>
         <AddCooperativeModal />
-      </CardHeader>
-      <CardContent className='grid gap-6'>
+      </div>
+      <div className='grid gap-6'>
         {/* Search and Filter */}
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           {/* Search Input */}
@@ -245,8 +245,8 @@ const CooperativesContent = () => {
             })}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
