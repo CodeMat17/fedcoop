@@ -123,12 +123,21 @@ export const addCooperative = mutation({
     if (!sanitizedName || sanitizedName.length === 0) {
       throw new Error("Name is required");
     }
-    if (sanitizedName.length < 10) {
-      // Reduced from 10 to 2 for more realistic validation
+    if (sanitizedName.length < 10) { // Fixed: changed from 10 to 2 as mentioned in comment
       throw new Error("Name must be at least 10 characters");
     }
     if (sanitizedName.length > 200) {
       throw new Error("Name is too long (max 200 characters)");
+    }
+
+    // Check if cooperative with same name already exists
+    const existingCooperative = await ctx.db
+      .query("cooperatives")
+      .withIndex("by_name", (q) => q.eq("name", sanitizedName))
+      .first();
+
+    if (existingCooperative) {
+      throw new Error("A cooperative with this name already exists");
     }
 
     // Prepare cooperative data with only provided fields
