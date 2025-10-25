@@ -18,7 +18,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   const quickLinks = [
-    { name: "About FedCoop", href: "/about-fedcoop" },
+    { name: "About FEDCOOP", href: "/about-fedcoop" },
     { name: "Member Cooperatives", href: "/members" },
     { name: "Recent Events", href: "/events" },
     { name: "Board of Directors", href: "/directors" },

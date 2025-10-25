@@ -18,7 +18,7 @@ const AboutPage = () => {
       icon: Building2,
       title: "Secondary Society",
       description:
-        "FedCoop stands as the apex cooperative institution for all Staff Cooperative Societies in Federal Government Ministries, Departments, and Agencies (MDAs) across Nigeria.",
+        "FEDCOOP stands as the apex cooperative institution for all Staff Cooperative Societies in Federal Government Ministries, Departments, and Agencies (MDAs) across Nigeria.",
     },
     {
       icon: Users,
@@ -30,7 +30,7 @@ const AboutPage = () => {
       icon: Target,
       title: "Economic Development",
       description:
-        "Through cooperative financing, entrepreneurship, and mutual support, FedCoop significantly contributes to the economic empowerment of Nigerian workers and communities.",
+        "Through cooperative financing, entrepreneurship, and mutual support, FEDCOOP significantly contributes to the economic empowerment of Nigerian workers and communities.",
     },
     {
       icon: Shield,
@@ -58,7 +58,7 @@ const AboutPage = () => {
               The{" "}
               <strong>
                 Federation of Federal Government Staff Cooperative Societies
-                (FedCoop)
+                (FEDCOOP){' '}
               </strong>
               is a secondary cooperative body that unites all Staff Cooperative
               Societies operating within Federal Government Ministries and MDAs.
@@ -105,7 +105,7 @@ const AboutPage = () => {
               </h3>
               <div className='space-y-5 text-muted-foreground leading-relaxed'>
                 <p>
-                  FedCoop plays a pivotal role in shaping the cooperative
+                  FEDCOOP plays a pivotal role in shaping the cooperative
                   landscape in Nigeria. We serve as the{" "}
                   <strong>central coordinating body</strong> that advocates for
                   policy reforms, ensures operational transparency, and builds
@@ -120,7 +120,7 @@ const AboutPage = () => {
                 </p>
                 <p>
                   By strengthening the financial and managerial capacity of
-                  cooperatives, FedCoop contributes to wealth creation,
+                  cooperatives, FEDCOOP contributes to wealth creation,
                   employment generation, and the overall stability of the
                   Nigerian economy.
                 </p>
@@ -191,7 +191,7 @@ const AboutPage = () => {
               Together, We Build Better
             </h3>
             <p className='text-muted-foreground leading-relaxed'>
-              FedCoop believes that when workers unite under a common vision of
+              FEDCOOP believes that when workers unite under a common vision of
               cooperation, they become a powerful force for national growth.
               Through shared knowledge, financial solidarity, and mutual
               respect, we continue to build a future where every cooperative
