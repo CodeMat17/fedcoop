@@ -78,7 +78,7 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.8 }}
               className='flex flex-col sm:flex-row gap-4'>
               <Button asChild size='lg' className='group'>
-                <Link href='/members'>
+                <Link href='/cooperatives'>
                   <>
                     Join Us
                     <ArrowRight

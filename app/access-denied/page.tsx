@@ -1,10 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Home, LogIn, ShieldX } from "lucide-react";
+import { SignedIn } from "@clerk/clerk-react";
+import { UserButton } from "@clerk/nextjs";
+import { Home, ShieldX } from "lucide-react";
 import Link from "next/link";
 
-const NoPermissionPage = () => {
+const AccessDeniedPage = () => {
   return (
     <div className='min-h-screen flex items-center justify-center px-4 relative overflow-hidden pt-24 pb-8'>
       {/* Animated background gradient */}
@@ -37,29 +39,31 @@ const NoPermissionPage = () => {
         </p>
 
         <p className='text-base md:text-lg text-muted-foreground/80 mb-12 max-w-lg mx-auto'>
-          This section is restricted to authorized administrators and verified primary cooperatives only. If you think this is an error, contact the FEDCOOP administrators.
+          This section is restricted to authorized administrators only.
         </p>
 
+        <SignedIn>
         {/* Action buttons */}
-        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
+        <div className=''>
           <Button asChild size='lg' className='group relative overflow-hidden'>
             <Link href='/'>
               <span className='relative z-10 flex items-center gap-2'>
                 <Home className='w-5 h-5' />
-                Back to Home
+                Go to Homepage
               </span>
             </Link>
           </Button>
-
-          <Button asChild size='lg' variant='outline' className='group'>
+          <UserButton />
+          {/* <Button asChild size='lg' variant='outline' className='group'>
             <Link href='/sign-in'>
               <span className='flex items-center gap-2'>
                 <LogIn className='w-5 h-5 group-hover:translate-x-0.5 transition-transform' />
                 Sign In
               </span>
             </Link>
-          </Button>
+          </Button> */}
         </div>
+        </SignedIn>
 
         {/* Additional info */}
         <p className='mt-12 text-sm text-muted-foreground/60'>
@@ -70,4 +74,4 @@ const NoPermissionPage = () => {
   );
 };
 
-export default NoPermissionPage;
+export default AccessDeniedPage;

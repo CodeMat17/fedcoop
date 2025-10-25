@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { SignedIn, UserButton } from "@clerk/nextjs";
+import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +17,11 @@ import { useState } from "react";
 import { ThemeToggle } from "./theme-toggle";
 
 export function Navigation() {
-  // const { theme, setTheme } = useTheme();
+  const { user } = useUser();
+  // Get user role from session claims
+  const userRole = user?.publicMetadata?.role as string;
+  const isAdmin = userRole === "admin";
+
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
@@ -50,15 +54,7 @@ export function Navigation() {
       title: "Contact",
       href: "/contact",
     },
-    // {
-    //   title: "Admin",
-    //   href: "/admin",
-    // },
   ];
-
-  // const toggleTheme = () => {
-  //   setTheme(theme === "dark" ? "light" : "dark");
-  // };
 
   return (
     <header className='fixed top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm'>
@@ -68,7 +64,9 @@ export function Navigation() {
           <Link href='/'>
             <div className='flex items-center space-x-2'>
               <Image src='/logo.webp' alt='FedCoop' width={50} height={50} />
-              <span className='text-xl font-bold md:hidden lg:block'>FEDCOOP</span>
+              <span className='text-xl font-bold md:hidden lg:block'>
+                FEDCOOP
+              </span>
             </div>
           </Link>
 
@@ -83,10 +81,10 @@ export function Navigation() {
                       href={item.href}
                       className={`group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent/40 dark:hover:bg-accent
                         hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 ${
-                        isActive
-                          ? "text-yellow-600 dark:text-yellow-500 font-semibold"
-                          : "text-foreground"
-                      }`}>
+                          isActive
+                            ? "text-yellow-600 dark:text-yellow-500 font-semibold"
+                            : "text-foreground"
+                        }`}>
                       {item.title}
                     </NavigationMenuLink>
                   </NavigationMenuItem>
@@ -99,7 +97,9 @@ export function Navigation() {
           <div className='flex items-center justify-center gap-2'>
             <ThemeToggle />
             <SignedIn>
-              <UserButton />
+          {/* {isAdmin */}
+            <UserButton />
+          
             </SignedIn>
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>

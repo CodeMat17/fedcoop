@@ -35,7 +35,7 @@ export default clerkMiddleware(async (auth, req) => {
     }
 
     // Users without admin or coop role are not permitted
-    const url = new URL("/no-permission", req.url);
+    const url = new URL("/access-denied", req.url);
     return NextResponse.redirect(url);
   }
 });
