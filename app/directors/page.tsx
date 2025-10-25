@@ -26,7 +26,7 @@ const DirectorsPage = () => {
       <div className='w-full max-w-6xl mx-auto px-4 pt-24 pb-12 relative z-10'>
         <div className='text-center mb-20'>
           <h1 className='text-5xl md:text-6xl font-bold text-foreground mb-6'>
-            FedCoop Board of Directors
+            FEDCOOP Board of Directors
           </h1>
           <p className='text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
             Meet the dedicated leaders serving FedCoop&apos;s members and
