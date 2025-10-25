@@ -281,7 +281,7 @@ const AddExcoModal = () => {
 
             {/* Description */}
             <div className='grid gap-3'>
-              <Label htmlFor='description'>Organization Coop/Post *</Label>
+              <Label htmlFor='description'>Cooperative/Post *</Label>
               <Input
                 id='description'
                 placeholder='e.g., PRO, EFCC Cooperative'

@@ -25,40 +25,37 @@ import {
 import { Textarea } from "./ui/textarea";
 
 interface FormData {
-  ministryName: string;
-  societyShortName: string;
-  registrationForm: File | null;
+  name: string;
+  certificate: File | null;
   paymentReceipt: File | null;
-  establishedMonth: string;
-  establishedYear: string;
-  numberOfMembers: string;
   email: string;
   phoneNo: string;
   webAddress: string;
   address: string;
 }
 
-const RegisterModal = () => {
-  const members = useQuery(api.members.getAllMembers);
-  const registration = useMutation(api.registration.submitRegistration);
+const ActivateCooperativeModal = () => {
+  const cooperatives = useQuery(api.cooperatives.getAllCooperatives);
+  const activateCooperative = useMutation(api.cooperatives.activateCooperative);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
 
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<FormData>({
-    ministryName: "",
-    societyShortName: "",
-    registrationForm: null,
+    name: "",
+    certificate: null,
     paymentReceipt: null,
-    establishedMonth: "",
-    establishedYear: "",
-    numberOfMembers: "",
     email: "",
     phoneNo: "",
     webAddress: "",
     address: "",
   });
+
+  // Filter cooperatives to only show those with 'inactive' status
+  const inactiveCooperatives = cooperatives?.filter(
+    (coop) => coop.status === "inactive"
+  );
 
   // Input sanitization functions
   const sanitizeText = (text: string): string => {
@@ -113,17 +110,16 @@ const RegisterModal = () => {
     const newErrors: Record<string, string> = {};
 
     // Validate required fields
-    if (!formData.ministryName.trim()) {
-      newErrors.ministryName = "Ministry/MDA name is required";
-    } else if (formData.ministryName.length < 3) {
-      newErrors.ministryName =
-        "Ministry/MDA name must be at least 3 characters";
+    if (!formData.name.trim()) {
+      newErrors.name = "Cooperative name is required";
+    } else if (formData.name.length < 2) {
+      newErrors.name = "Cooperative name must be at least 2 characters";
     }
 
-    if (!formData.registrationForm) {
-      newErrors.registrationForm = "Registration form is required";
-    } else if (!validateFile(formData.registrationForm)) {
-      newErrors.registrationForm =
+    if (!formData.certificate) {
+      newErrors.certificate = "Certificate of incorporation is required";
+    } else if (!validateFile(formData.certificate)) {
+      newErrors.certificate =
         "Invalid file type or size (max 10MB, JPG/PNG/PDF only)";
     }
 
@@ -132,24 +128,6 @@ const RegisterModal = () => {
     } else if (!validateFile(formData.paymentReceipt)) {
       newErrors.paymentReceipt =
         "Invalid file type or size (max 10MB, JPG/PNG/PDF only)";
-    }
-
-    if (!formData.establishedMonth) {
-      newErrors.establishedMonth = "Establishment month is required";
-    }
-
-    if (!formData.establishedYear) {
-      newErrors.establishedYear = "Establishment year is required";
-    }
-
-    if (!formData.numberOfMembers.trim()) {
-      newErrors.numberOfMembers = "Number of members is required";
-    } else {
-      const numMembers = parseInt(formData.numberOfMembers);
-      if (isNaN(numMembers) || numMembers < 1 || numMembers > 100000) {
-        newErrors.numberOfMembers =
-          "Number of members must be between 1 and 100,000";
-      }
     }
 
     // Email validation
@@ -180,8 +158,9 @@ const RegisterModal = () => {
 
     if (!formData.address.trim()) {
       newErrors.address = "Address is required";
-    } else if (formData.address.length < 10) {
-      newErrors.address = "Address must be at least 10 characters";
+    } else if (formData.address.length < 5) {
+      // Changed from 10 to 5 to match Convex validation
+      newErrors.address = "Address must be at least 5 characters";
     }
 
     setErrors(newErrors);
@@ -204,8 +183,7 @@ const RegisterModal = () => {
     // Sanitize string inputs
     if (typeof value === "string") {
       switch (field) {
-        case "ministryName":
-        case "societyShortName":
+        case "name":
         case "address":
           sanitizedValue = sanitizeText(value);
           break;
@@ -217,10 +195,6 @@ const RegisterModal = () => {
           break;
         case "webAddress":
           sanitizedValue = sanitizeUrl(value);
-          break;
-        case "numberOfMembers":
-          // Only allow digits for member count
-          sanitizedValue = value.replace(/[^\d]/g, "");
           break;
         default:
           sanitizedValue = sanitizeText(value);
@@ -240,7 +214,7 @@ const RegisterModal = () => {
   };
 
   const handleFileUpload = (
-    field: "registrationForm" | "paymentReceipt",
+    field: "certificate" | "paymentReceipt",
     file: File | null
   ) => {
     if (file) {
@@ -275,26 +249,28 @@ const RegisterModal = () => {
       return;
     }
 
-    if (!formData.registrationForm || !formData.paymentReceipt) {
-      toast.error("Please upload both registration form and payment receipt");
+    if (!formData.certificate || !formData.paymentReceipt) {
+      toast.error(
+        "Please upload both incorporation certificate and payment receipt"
+      );
       return;
     }
 
     setIsSubmitting(true);
-    toast.loading("Preparing registration...");
+    toast.loading("Preparing activation...");
 
     try {
-      // Step 1: Upload registration certificate
-      toast.loading("Uploading registration certificate...");
+      // Step 1: Upload incorporation certificate
+      toast.loading("Uploading incorporation certificate...");
       const certUploadUrl = await generateUploadUrl();
       const certResult = await fetch(certUploadUrl, {
         method: "POST",
-        headers: { "Content-Type": formData.registrationForm.type },
-        body: formData.registrationForm,
+        headers: { "Content-Type": formData.certificate.type },
+        body: formData.certificate,
       });
 
       if (!certResult.ok) {
-        throw new Error("Failed to upload registration certificate");
+        throw new Error("Failed to upload incorporation certificate");
       }
 
       const { storageId: certStorageId } = await certResult.json();
@@ -316,27 +292,33 @@ const RegisterModal = () => {
       const { storageId: receiptStorageId } = await receiptResult.json();
       toast.success("Payment receipt uploaded!");
 
-      // Step 3: Submit registration
-      toast.loading("Submitting registration...");
-      const established = `${formData.establishedYear}-${formData.establishedMonth.padStart(2, "0")}`;
+      // Step 3: Find the cooperative ID by name
+      const selectedCooperative = cooperatives?.find(
+        (coop) => coop.name === formData.name
+      );
 
-      await registration({
-        name: sanitizeTextForSubmit(formData.ministryName),
-        registrationCertificate: certStorageId,
-        paymentReceipt: receiptStorageId,
-        established: established,
-        numberOfMembers: parseInt(formData.numberOfMembers),
+      if (!selectedCooperative) {
+        throw new Error("Selected cooperative not found");
+      }
+
+      // Step 4: Activate the cooperative with all required fields
+      toast.loading("Activating cooperative...");
+
+      await activateCooperative({
+        id: selectedCooperative._id,
+        name: sanitizeTextForSubmit(formData.name),
         email: sanitizeEmail(formData.email),
         phoneNumber: sanitizePhone(formData.phoneNo),
-        websiteUrl: formData.webAddress
-          ? sanitizeUrl(formData.webAddress)
-          : undefined,
+        websiteUrl: formData.webAddress ? sanitizeUrl(formData.webAddress) : "", // Send empty string if no website
         address: sanitizeTextForSubmit(formData.address),
+        certificate: certStorageId,
+        paymentReceipt: receiptStorageId,
+        // Note: status is automatically set to "processing" in the mutation
       });
 
       toast.dismiss();
-      toast.success("✅ Registration submitted successfully!", {
-        description: "Your application is now under review.",
+      toast.success("✅ Cooperative activation submitted!", {
+        description: "Your activation request is now under review.",
         duration: 5000,
       });
 
@@ -344,25 +326,21 @@ const RegisterModal = () => {
       setOpen(false);
       setErrors({});
       setFormData({
-        ministryName: "",
-        societyShortName: "",
-        registrationForm: null,
+        name: "",
+        certificate: null,
         paymentReceipt: null,
-        establishedMonth: "",
-        establishedYear: "",
-        numberOfMembers: "",
         email: "",
         phoneNo: "",
         webAddress: "",
         address: "",
       });
     } catch (error) {
-      console.error("Submission error:", error);
+      console.error("Activation error:", error);
       toast.dismiss();
       toast.error(
         error instanceof Error
           ? error.message
-          : "Failed to submit registration. Please try again.",
+          : "Failed to submit activation request. Please try again.",
         {
           duration: 5000,
         }
@@ -377,7 +355,7 @@ const RegisterModal = () => {
     label,
     accept = "image/*,.pdf",
   }: {
-    field: "registrationForm" | "paymentReceipt";
+    field: "certificate" | "paymentReceipt";
     label: string;
     accept?: string;
   }) => {
@@ -388,8 +366,8 @@ const RegisterModal = () => {
         <Label htmlFor={field}>{label}</Label>
         {file ? (
           <div className='flex items-center justify-between p-3 border rounded-md bg-muted'>
-            <div className='flex items-center space-x-2'>
-              <Upload className='h-4 w-4' />
+            <div className='flex items-center space-x-2 truncate'>
+              <Upload className='h-4 w-4 shrink-0' />
               <span className='text-sm truncate'>{file.name}</span>
             </div>
             <Button
@@ -422,203 +400,128 @@ const RegisterModal = () => {
             </label>
           </div>
         )}
+        {errors[field] && (
+          <p className='text-xs text-red-500'>{errors[field]}</p>
+        )}
       </div>
     );
+  };
+
+  // Helper function to get status display info
+  const getStatusInfo = (status: string) => {
+    switch (status) {
+      case "active":
+        return { label: "Active", className: "text-green-600" };
+      case "processing":
+        return { label: "Processing", className: "text-yellow-600" };
+      case "inactive":
+        return { label: "Inactive", className: "text-gray-500" };
+      default:
+        return { label: "Unknown", className: "text-gray-500" };
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          size='lg'
-          className='bg-primary hover:bg-primary/90 text-primary-foreground'>
-          Register Your Cooperative
+        <Button className='bg-primary hover:bg-primary/90 text-primary-foreground'>
+          Continue
         </Button>
       </DialogTrigger>
       <DialogContent className='max-w-2xl max-h-[90vh] flex flex-col'>
         <DialogHeader className='flex-shrink-0'>
           <DialogTitle className='text-2xl font-bold'>
-            FedCoop Registration Form
+            FEDCOOP Activation Form
           </DialogTitle>
           <p className='text-sm text-muted-foreground'>
             Join our federation of cooperative societies. Fill out the form
-            below to register your cooperative.
+            below to activate your cooperative society.
           </p>
         </DialogHeader>
 
         <div className='flex-1 overflow-y-auto'>
           <form onSubmit={handleSubmit} className='space-y-6 py-4'>
-            {/* Ministry/MDA Name */}
+            {/* Cooperative Name Selection */}
             <div className='space-y-2'>
-              <Label htmlFor='ministryName' className='text-sm md:text-base'>
-                Name of Ministry/MDA *
+              <Label htmlFor='cooperativeName' className='text-sm md:text-base'>
+                Name of Cooperative *
               </Label>
-              {members === undefined ? (
+              {cooperatives === undefined ? (
                 <div className='flex items-center gap-2 p-3 border rounded-md'>
                   <Loader2 className='w-4 h-4 animate-spin' />
                   <span className='text-xs md:text-sm text-muted-foreground'>
-                    Loading members...
+                    Loading cooperatives...
                   </span>
                 </div>
-              ) : members.length === 0 ? (
+              ) : inactiveCooperatives?.length === 0 ? (
                 <div className='p-3 border rounded-md text-xs md:text-sm text-muted-foreground'>
-                  No members available. Please contact admin.
+                  No inactive cooperatives available for activation. All
+                  cooperatives are either processing or already active.
                 </div>
               ) : (
                 <Select
-                  value={formData.ministryName}
-                  onValueChange={(value) =>
-                    handleInputChange("ministryName", value)
-                  }>
+                  value={formData.name}
+                  onValueChange={(value) => handleInputChange("name", value)}>
                   <SelectTrigger
-                    id='ministryName'
+                    id='cooperativeName'
                     className={`w-full text-sm md:text-base ${
-                      errors.ministryName ? "border-red-500" : ""
+                      errors.name ? "border-red-500" : ""
                     }`}>
-                    <SelectValue placeholder='Select your organization' />
+                    <SelectValue placeholder='Select your cooperative' />
                   </SelectTrigger>
                   <SelectContent
                     className='max-h-[200px] md:max-h-[300px] overflow-y-auto'
                     position='popper'
                     sideOffset={5}>
-                    {members.map((member) => (
+                    {/* Show inactive cooperatives as selectable options */}
+                    {inactiveCooperatives?.map((cooperative) => (
                       <SelectItem
-                        key={member._id}
-                        value={member.name}
+                        key={cooperative._id}
+                        value={cooperative.name}
                         className='text-sm md:text-base'>
                         <span className='truncate block max-w-[250px] md:max-w-[400px] capitalize'>
-                          {member.name}
+                          {cooperative.name}
                         </span>
                       </SelectItem>
                     ))}
+
+                    {/* Show non-selectable options for active/processing cooperatives */}
+                    {cooperatives
+                      ?.filter((coop) => coop.status !== "inactive")
+                      .map((cooperative) => (
+                        <SelectItem
+                          key={cooperative._id}
+                          value={cooperative.name}
+                          className='text-sm md:text-base opacity-50 cursor-not-allowed'
+                          disabled>
+                          <div className='flex justify-between items-center w-full'>
+                            <span className='truncate block max-w-[180px] md:max-w-[330px] capitalize'>
+                              {cooperative.name}
+                            </span>
+                            <span
+                              className={`text-xs px-2 py-1 rounded ${getStatusInfo(cooperative.status).className} bg-opacity-20`}>
+                              {getStatusInfo(cooperative.status).label}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               )}
-              {errors.ministryName && (
-                <p className='text-xs md:text-sm text-red-500'>
-                  {errors.ministryName}
-                </p>
+              {errors.name && (
+                <p className='text-xs md:text-sm text-red-500'>{errors.name}</p>
               )}
             </div>
 
             {/* File Uploads */}
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <FileUpload
-                field='registrationForm'
-                label='Registration Form *'
+                field='certificate'
+                label='Certificate of Incorporation *'
               />
               <FileUpload
                 field='paymentReceipt'
                 label='Payment Receipt (₦50,000) *'
-              />
-            </div>
-
-            {/* When Established */}
-            <div className='space-y-2'>
-              <Label className='text-sm md:text-base'>When Established *</Label>
-              <div className='grid grid-cols-2 gap-3 md:gap-4'>
-                <div className='space-y-2'>
-                  <Label
-                    htmlFor='establishedMonth'
-                    className='text-xs md:text-sm'>
-                    Month
-                  </Label>
-                  <Select
-                    value={formData.establishedMonth}
-                    onValueChange={(value) =>
-                      handleInputChange("establishedMonth", value)
-                    }>
-                    <SelectTrigger className='text-sm md:text-base'>
-                      <SelectValue placeholder='Select month' />
-                    </SelectTrigger>
-                    <SelectContent className='max-h-[200px] md:max-h-[300px]'>
-                      <SelectItem value='01' className='text-sm md:text-base'>
-                        January
-                      </SelectItem>
-                      <SelectItem value='02' className='text-sm md:text-base'>
-                        February
-                      </SelectItem>
-                      <SelectItem value='03' className='text-sm md:text-base'>
-                        March
-                      </SelectItem>
-                      <SelectItem value='04' className='text-sm md:text-base'>
-                        April
-                      </SelectItem>
-                      <SelectItem value='05' className='text-sm md:text-base'>
-                        May
-                      </SelectItem>
-                      <SelectItem value='06' className='text-sm md:text-base'>
-                        June
-                      </SelectItem>
-                      <SelectItem value='07' className='text-sm md:text-base'>
-                        July
-                      </SelectItem>
-                      <SelectItem value='08' className='text-sm md:text-base'>
-                        August
-                      </SelectItem>
-                      <SelectItem value='09' className='text-sm md:text-base'>
-                        September
-                      </SelectItem>
-                      <SelectItem value='10' className='text-sm md:text-base'>
-                        October
-                      </SelectItem>
-                      <SelectItem value='11' className='text-sm md:text-base'>
-                        November
-                      </SelectItem>
-                      <SelectItem value='12' className='text-sm md:text-base'>
-                        December
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className='space-y-2'>
-                  <Label
-                    htmlFor='establishedYear'
-                    className='text-xs md:text-sm'>
-                    Year
-                  </Label>
-                  <Select
-                    value={formData.establishedYear}
-                    onValueChange={(value) =>
-                      handleInputChange("establishedYear", value)
-                    }>
-                    <SelectTrigger className='text-sm md:text-base'>
-                      <SelectValue placeholder='Select year' />
-                    </SelectTrigger>
-                    <SelectContent className='max-h-[200px] md:max-h-60'>
-                      {Array.from({ length: 50 }, (_, i) => {
-                        const year = new Date().getFullYear() - i;
-                        return (
-                          <SelectItem
-                            key={year}
-                            value={year.toString()}
-                            className='text-sm md:text-base'>
-                            {year}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
-            {/* Number of Members */}
-            <div className='space-y-2'>
-              <Label htmlFor='numberOfMembers' className='text-sm md:text-base'>
-                Number of Members *
-              </Label>
-              <Input
-                id='numberOfMembers'
-                type='number'
-                placeholder='e.g., 150'
-                value={formData.numberOfMembers}
-                onChange={(e) =>
-                  handleInputChange("numberOfMembers", e.target.value)
-                }
-                min='1'
-                className='text-sm md:text-base'
-                required
               />
             </div>
 
@@ -720,14 +623,14 @@ const RegisterModal = () => {
               <Button
                 type='submit'
                 className='w-full sm:w-auto bg-primary hover:bg-primary/90 text-sm md:text-base'
-                disabled={isSubmitting}>
+                disabled={isSubmitting || inactiveCooperatives?.length === 0}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className='w-4 h-4 mr-2 animate-spin' />
                     Submitting...
                   </>
                 ) : (
-                  "Submit Registration"
+                  "Submit Activation"
                 )}
               </Button>
             </div>
@@ -738,4 +641,4 @@ const RegisterModal = () => {
   );
 };
 
-export default RegisterModal;
+export default ActivateCooperativeModal;

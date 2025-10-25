@@ -1,6 +1,6 @@
 "use client";
 
-import ActivateMemberModal from "@/components/activate-cooperative-modal";
+import { AlertDialogModal } from "@/components/AlertDialogModal";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,40 +22,37 @@ import {
   Mail,
   Phone,
   Search,
-  Users,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
 
-export default function VerifiedCooperators() {
-  const members = useQuery(api.members.getAllMembers);
+export default function MembersPage() {
+  const cooperatives = useQuery(api.cooperatives.getAllCooperatives);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const filteredSocieties = members
-    ? members.filter((member) => {
-        const matchesSearch = member.name
+  const filteredSocieties = cooperatives
+    ? cooperatives.filter((cooperative) => {
+        const matchesSearch = cooperative.name
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
         const matchesStatus =
-          statusFilter === "all" || member.status === statusFilter;
+          statusFilter === "all" || cooperative.status === statusFilter;
         return matchesSearch && matchesStatus;
       })
     : [];
 
-  const activeCount = members
-    ? members.filter((s) => s.status === "active").length
+  const activeCount = cooperatives
+    ? cooperatives.filter((s) => s.status === "active").length
     : 0;
-  const inactiveCount = members
-    ? members.filter((s) => s.status === "inactive").length
+  const inactiveCount = cooperatives
+    ? cooperatives.filter((s) => s.status === "inactive").length
     : 0;
-  const processingCount = members
-    ? members.filter((s) => s.status === "processing").length
+  const processingCount = cooperatives
+    ? cooperatives.filter((s) => s.status === "processing").length
     : 0;
-  const totalMembers = members
-    ? members.reduce((sum, s) => sum + (s.numberOfMembers || 0), 0)
-    : 0;
+  
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -113,15 +110,76 @@ export default function VerifiedCooperators() {
     <div className='min-h-screen pb-12 pt-24 px-4'>
       <div className='w-full max-w-5xl mx-auto'>
         {/* Header Section */}
-        <div className='text-center mb-12'>
-          <h1 className='text-4xl font-bold tracking-tight mb-4'>
-            Our Member Cooperatives
-          </h1>
-          <p className='text-lg text-muted-foreground max-w-3xl mx-auto mb-6'>
-            Discover the diverse network of cooperative societies that make up
-            our federation. Each society represents a community of dedicated
-            members working together for mutual benefit.
-          </p>
+        <div className='flex flex-col lg:flex-row items-center justify-center mb-12 lg:justify-between'>
+          <div className='text-center lg:text-start'>
+            <h1 className='text-4xl font-bold tracking-tight mb-4'>
+              Our Member Cooperatives
+            </h1>
+            <p className='text-lg text-muted-foreground max-w-xl mx-auto mb-6'>
+              Discover the diverse network of cooperative societies that make up
+              our federation. Each society represents a community of dedicated
+              members working together for mutual benefit.
+            </p>
+          </div>
+
+          <AlertDialogModal />
+        </div>
+
+        {/* Statistics */}
+        <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4 mb-8'>
+          <Card>
+            <CardContent className='p-4 text-center'>
+              <Building2 className='h-6 w-6 mx-auto mb-2 text-primary' />
+              <div className='text-xl font-bold flex items-center justify-center gap-2'>
+                {cooperatives === undefined || cooperatives === null ? (
+                  <Loader2 className='w-4 h-4 animate-spin text-muted-foreground' />
+                ) : (
+                  cooperatives?.length || 0
+                )}
+              </div>
+              <p className='text-xs text-muted-foreground'>Total Cooperative</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className='p-4 text-center'>
+              <CheckCircle className='h-6 w-6 mx-auto mb-2 text-green-600' />
+              <div className='flex items-center justify-center gap-2 text-xl font-bold text-green-600'>
+                {cooperatives === undefined || cooperatives === null ? (
+                  <Loader2 className='w-4 h-4 animate-spin text-muted-foreground' />
+                ) : (
+                  activeCount
+                )}
+              </div>
+              <p className='text-xs text-muted-foreground'>Active</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className='p-4 text-center'>
+              <Clock className='h-6 w-6 mx-auto mb-2 text-blue-600' />
+              <div className='flex items-center justify-center gap-2 text-xl font-bold text-blue-600'>
+                {cooperatives === undefined || cooperatives === null ? (
+                  <Loader2 className='w-4 h-4 animate-spin text-muted-foreground' />
+                ) : (
+                  processingCount
+                )}
+              </div>
+              <p className='text-xs text-muted-foreground'>Processing</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className='p-4 text-center'>
+              <XCircle className='h-6 w-6 mx-auto mb-2 text-orange-600' />
+              <div className='flex items-center justify-center gap-2 text-xl font-bold text-orange-600'>
+                {cooperatives === undefined || cooperatives === null ? (
+                  <Loader2 className='w-4 h-4 animate-spin text-muted-foreground' />
+                ) : (
+                  inactiveCount
+                )}
+              </div>
+              <p className='text-xs text-muted-foreground'>Inactive</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Search and Filter */}
@@ -140,7 +198,7 @@ export default function VerifiedCooperators() {
               <SelectValue placeholder='Filter by status' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='all'>All Societies</SelectItem>
+              <SelectItem value='all'>All Cooperative</SelectItem>
               <SelectItem value='active'>Active Only</SelectItem>
               <SelectItem value='processing'>Processing Only</SelectItem>
               <SelectItem value='inactive'>Inactive Only</SelectItem>
@@ -151,20 +209,20 @@ export default function VerifiedCooperators() {
         {/* Results Count */}
         <div className='mb-6'>
           <p className='text-sm text-muted-foreground'>
-            Showing {filteredSocieties.length} of {members?.length || 0}{" "}
-            societies
+            Showing {filteredSocieties.length} of {cooperatives?.length || 0}{" "}
+            cooperatives
           </p>
         </div>
 
-        {members === undefined ? (
+        {cooperatives === undefined ? (
           <div className='flex items-center justify-center py-12'>
             <Loader2 className='w-4 h-4 mr-2 animate-spin' />
-            <span>Loading members...</span>
+            <span>Loading cooperatives...</span>
           </div>
         ) : filteredSocieties.length === 0 ? (
           <div className='text-center py-12'>
             <Building2 className='h-12 w-12 mx-auto mb-4 text-muted-foreground' />
-            <h3 className='text-lg font-semibold mb-2'>No societies found</h3>
+            <h3 className='text-lg font-semibold mb-2'>No cooperative found</h3>
             <p className='text-muted-foreground'>
               Try adjusting your search terms or filters to find what
               you&apos;re looking for.
@@ -172,95 +230,72 @@ export default function VerifiedCooperators() {
           </div>
         ) : (
           <div className='grid grid-cols-1 gap-6'>
-            {filteredSocieties.map((member) => (
+            {filteredSocieties.map((cooperative) => (
               <Card
-                key={member._id}
+                key={cooperative._id}
                 className={`hover:shadow-lg transition-shadow duration-300 ${
-                  member.status === "inactive" ? "opacity-60 grayscale" : ""
+                  cooperative.status === "inactive"
+                    ? "opacity-60 grayscale"
+                    : ""
                 }`}>
                 <CardHeader className=''>
                   <div className='space-y-2'>
                     <Badge
-                      variant={getStatusBadgeVariant(member.status)}
-                      className={`flex items-center gap-1 w-fit py-0.5 ${getStatusBadgeStyle(member.status)}`}>
-                      {getStatusIcon(member.status)}
-                      {getStatusDisplayText(member.status)}
+                      variant={getStatusBadgeVariant(cooperative.status)}
+                      className={`flex items-center gap-1 w-fit py-0.5 ${getStatusBadgeStyle(cooperative.status)}`}>
+                      {getStatusIcon(cooperative.status)}
+                      {getStatusDisplayText(cooperative.status)}
                     </Badge>
                     <CardTitle className='text-lg leading-tight'>
-                      {member.name}
+                      {cooperative.name}
                     </CardTitle>
                   </div>
 
-                  {member.status === "inactive" && (
-                    <div>
-                      <ActivateMemberModal member={member} />
-                    </div>
+                  {cooperative.status === "active" && (
+                    <div className='mt-1 flex flex-col sm:flex-row sm:items-center sm:gap-8'></div>
                   )}
 
-                  {member.status === "active" && (
-                    <div className='mt-1 flex flex-col sm:flex-row sm:items-center sm:gap-8'>
-                      <p className='text-sm text-muted-foreground font-medium'>
-                        Established{" "}
-                        {member.established
-                          ? new Date(
-                              member.established + "-01"
-                            ).toLocaleDateString("en-US", {
-                              year: "numeric",
-                              month: "long",
-                            })
-                          : "N/A"}
-                      </p>
-                      <div className='flex items-center text-sm'>
-                        <Users className='h-4 w-4 mr-2 text-muted-foreground' />
-                        <span className='font-medium mr-2'>
-                          {(member.numberOfMembers || 0).toLocaleString()}
-                        </span>
-                        <span className='text-muted-foreground'>members</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {member.status === "processing" && (
+                  {cooperative.status === "processing" && (
                     <p className='text-sm text-muted-foreground animate-pulse'>
                       Processing activation, Please wait...
                     </p>
                   )}
                 </CardHeader>
 
-                {member.status === "active" && (
+                {cooperative.status === "active" && (
                   <CardContent className='space-y-4'>
                     <div className='flex flex-wrap gap-x-4 pt-4 border-t space-y-2'>
-                      {member.email && (
+                      {cooperative.email && (
                         <div className='flex items-center text-sm'>
                           <Mail className='h-4 w-4 mr-2 text-muted-foreground' />
                           <a
-                            href={`mailto:${member.email}`}
+                            href={`mailto:${cooperative.email}`}
                             className='text-muted-foreground hover:text-primary truncate'>
-                            {member.email}
+                            {cooperative.email}
                           </a>
                         </div>
                       )}
 
-                      {member.phoneNumber && (
+                      {cooperative.phoneNumber && (
                         <div className='flex items-center text-sm'>
                           <Phone className='h-4 w-4 mr-2 text-muted-foreground' />
                           <a
-                            href={`tel:${member.phoneNumber}`}
+                            href={`tel:${cooperative.phoneNumber}`}
                             className='text-muted-foreground hover:text-primary'>
-                            {member.phoneNumber}
+                            {cooperative.phoneNumber}
                           </a>
                         </div>
                       )}
 
-                      {member.websiteUrl ? (
+                      {cooperative.websiteUrl ? (
                         <div className='flex items-center text-sm'>
                           <Globe className='h-4 w-4 mr-2 text-muted-foreground' />
                           <a
-                            href={member.websiteUrl}
+                            href={cooperative.websiteUrl}
                             target='_blank'
                             rel='noopener noreferrer'
                             className='text-primary hover:underline truncate'>
-                            {member.websiteUrl.replace(/^https?:\/\//, "")}
+                            {cooperative.websiteUrl.replace(/^https?:\/\//, "")}
                           </a>
                         </div>
                       ) : (
@@ -272,10 +307,10 @@ export default function VerifiedCooperators() {
                         </div>
                       )}
 
-                      {member.address && (
+                      {cooperative.address && (
                         <div className='text-sm text-muted-foreground'>
                           <span className='font-medium'>Address:</span>{" "}
-                          {member.address}
+                          {cooperative.address}
                         </div>
                       )}
                     </div>

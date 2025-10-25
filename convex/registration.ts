@@ -61,33 +61,6 @@ function validateUrl(url: string): void {
   }
 }
 
-// Helper function to validate established date (YYYY-MM format)
-function validateEstablishedDate(date: string): void {
-  const dateRegex = /^\d{4}-(0[1-9]|1[0-2])$/;
-  if (!dateRegex.test(date)) {
-    throw new Error(
-      "Established date must be in YYYY-MM format (e.g., 2024-01)"
-    );
-  }
-
-  const [year] = date.split("-").map(Number);
-  const currentYear = new Date().getFullYear();
-
-  if (year < 1900 || year > currentYear) {
-    throw new Error(`Year must be between 1900 and ${currentYear}`);
-  }
-}
-
-// Helper function to validate number of members
-function validateNumberOfMembers(count: number): void {
-  if (!Number.isInteger(count) || count < 1) {
-    throw new Error("Number of members must be a positive integer");
-  }
-  if (count > 1000000) {
-    throw new Error("Number of members exceeds maximum allowed");
-  }
-}
-
 // Query to get all registrations
 export const getAllRegistrations = query({
   args: {},
@@ -118,8 +91,6 @@ export const submitRegistration = mutation({
     name: v.string(),
     registrationCertificate: v.string(), // Storage ID
     paymentReceipt: v.string(), // Storage ID
-    established: v.string(),
-    numberOfMembers: v.number(),
     email: v.string(),
     phoneNumber: v.string(),
     websiteUrl: v.optional(v.string()),
@@ -159,12 +130,6 @@ export const submitRegistration = mutation({
     // Sanitize and validate phone number
     const sanitizedPhone = validatePhoneNumber(args.phoneNumber);
 
-    // Validate established date
-    validateEstablishedDate(args.established);
-
-    // Validate number of members
-    validateNumberOfMembers(args.numberOfMembers);
-
     // Sanitize and validate address
     const sanitizedAddress = sanitizeString(args.address);
     if (!sanitizedAddress || sanitizedAddress.length === 0) {
@@ -184,25 +149,23 @@ export const submitRegistration = mutation({
       validateUrl(sanitizedWebsiteUrl);
     }
 
-    // Insert registration with default status as false (pending)
+    // Insert registration with default status as "processing"
     const registrationId = await ctx.db.insert("registration", {
       name: sanitizedName,
       registrationCertificate: args.registrationCertificate,
       paymentReceipt: args.paymentReceipt,
-      established: args.established,
-      numberOfMembers: args.numberOfMembers,
       email: sanitizedEmail,
       phoneNumber: sanitizedPhone,
       websiteUrl: sanitizedWebsiteUrl,
       address: sanitizedAddress,
-      status: false, // Default to pending approval
+      status: false, // Default status for new registrations
     });
 
     return registrationId;
   },
 });
 
-// Mutation to update registration status
+// Mutation to update registration status with union type
 export const updateRegistrationStatus = mutation({
   args: {
     id: v.id("registration"),
@@ -222,18 +185,9 @@ export const updateRegistrationStatus = mutation({
       status: status,
     });
 
-    // Also update the corresponding member status if exists
-    const matchingMember = await ctx.db
-      .query("members")
-      .withIndex("by_name", (q) => q.eq("name", existingRegistration.name))
-      .first();
-
-    if (matchingMember) {
-      await ctx.db.patch(matchingMember._id, {
-        status: status,
-      });
-    }
-
-    return { success: true, status: status, memberUpdated: !!matchingMember };
+    return {
+      success: true,
+      status: status,
+    };
   },
 });

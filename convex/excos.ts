@@ -93,9 +93,19 @@ export const updateExcos = mutation({
 
     if (args.image && args.image !== existing.image) {
       validateStorageId(args.image);
-      await ctx.storage.delete(existing.image as Id<"_storage">);
+    
+
+    // Delete the old image only if it exists
+      if (existing.image) {
+        try {
+          await ctx.storage.delete(existing.image as Id<"_storage">);
+        } catch (error) {
+          console.warn("Failed to delete old image:", error);
+          // Continue with update even if deletion fails
+        }
+      }
       updateData.image = args.image;
-    }
+    } 
 
     if (args.name !== undefined) {
       const name = sanitizeString(args.name);

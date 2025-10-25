@@ -18,32 +18,34 @@ import { AlertTriangle, Loader2, Trash } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface MemberItem {
-  _id: Id<"members">;
+interface CooperativeItem {
+  _id: Id<"cooperatives">;
   name: string;
-  email: string;
+  email?: string; // Changed to optional
 }
 
-interface DeleteMemberModalProps {
-  member: MemberItem;
+interface DeleteCooperativeModalProps {
+  cooperative: CooperativeItem;
 }
 
-const DeleteMemberModal = ({ member }: DeleteMemberModalProps) => {
+const DeleteCooperativeModal = ({
+  cooperative,
+}: DeleteCooperativeModalProps) => {
   const [open, setOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const deleteMember = useMutation(api.members.deleteMember);
+  const deleteCooperative = useMutation(api.cooperatives.deleteCooperative);
 
   const handleDelete = async () => {
     setIsDeleting(true);
 
     try {
-      await deleteMember({ id: member._id });
-      toast.success("Member deleted successfully!");
+      await deleteCooperative({ id: cooperative._id });
+      toast.success("Cooperative deleted successfully!"); // Fixed success message
       setOpen(false);
     } catch (error) {
-      console.error("Error deleting member:", error);
-      toast.error("Failed to delete member. Please try again.");
+      console.error("Error deleting cooperative:", error);
+      toast.error("Failed to delete cooperative. Please try again.");
     } finally {
       setIsDeleting(false);
     }
@@ -51,8 +53,12 @@ const DeleteMemberModal = ({ member }: DeleteMemberModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger >
-        <Trash className="w-5 h-5 text-destructive" />
+      <DialogTrigger asChild>
+        <Button size='icon' className='bg-red-500 text-white'>
+
+            <Trash className='w-5 h-5' />
+        </Button>
+      
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
@@ -61,7 +67,7 @@ const DeleteMemberModal = ({ member }: DeleteMemberModalProps) => {
               <AlertTriangle className='h-6 w-6 text-destructive' />
             </div>
             <div>
-              <DialogTitle>Delete Member</DialogTitle>
+              <DialogTitle>Delete Cooperative</DialogTitle>
               <DialogDescription className='mt-1'>
                 This action cannot be undone.
               </DialogDescription>
@@ -71,14 +77,18 @@ const DeleteMemberModal = ({ member }: DeleteMemberModalProps) => {
 
         <div className='py-4'>
           <p className='text-sm text-muted-foreground'>
-            Are you sure you want to delete this member?
+            Are you sure you want to delete this cooperative?
           </p>
           <div className='mt-3 rounded-lg bg-muted p-3'>
-            <p className='text-sm font-semibold'>{member.name}</p>
-            <p className='text-xs text-muted-foreground mt-1'>{member.email}</p>
+            <p className='text-sm font-semibold'>{cooperative.name}</p>
+            {cooperative.email && ( // Added conditional rendering for email
+              <p className='text-xs text-muted-foreground mt-1'>
+                {cooperative.email}
+              </p>
+            )}
           </div>
           <p className='mt-3 text-sm text-destructive'>
-            This will permanently delete the member from the database.
+            This will permanently delete the cooperative from the database.
           </p>
         </div>
 
@@ -98,7 +108,7 @@ const DeleteMemberModal = ({ member }: DeleteMemberModalProps) => {
                 Deleting...
               </>
             ) : (
-              "Delete Member"
+              "Delete Cooperative"
             )}
           </Button>
         </DialogFooter>
@@ -107,4 +117,4 @@ const DeleteMemberModal = ({ member }: DeleteMemberModalProps) => {
   );
 };
 
-export default DeleteMemberModal;
+export default DeleteCooperativeModal;

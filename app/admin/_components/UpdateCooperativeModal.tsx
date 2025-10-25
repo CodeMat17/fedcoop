@@ -13,13 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -28,61 +21,50 @@ import { Edit, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-interface MemberItem {
-  _id: Id<"members">;
+interface CooperativeItem {
+  _id: Id<"cooperatives">;
   name: string;
-  established: string;
-  email: string;
-  phoneNumber: string;
+  email?: string; // Changed to optional
+  phoneNumber?: string; // Changed to optional
   websiteUrl?: string;
-  address: string;
-  status?: boolean;
-  numberOfMembers: number;
+  address?: string; // Changed to optional
+  status?: "inactive" | "processing" | "active"; // Fixed status type
 }
 
-interface UpdateMemberModalProps {
-  member: MemberItem;
+interface UpdateCooperativeModalProps {
+  cooperative: CooperativeItem;
 }
 
-const UpdateMemberModal = ({ member }: UpdateMemberModalProps) => {
+const UpdateCooperativeModal = ({
+  cooperative,
+}: UpdateCooperativeModalProps) => {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState(member.name);
-  const [email, setEmail] = useState(member.email);
-  const [phoneNumber, setPhoneNumber] = useState(member.phoneNumber);
-  const [websiteUrl, setWebsiteUrl] = useState(member.websiteUrl || "");
-  const [address, setAddress] = useState(member.address);
-  const [numberOfMembers, setNumberOfMembers] = useState(
-    member.numberOfMembers.toString()
-  );
-  const [establishedMonth, setEstablishedMonth] = useState(
-    member.established.split("-")[1]
-  );
-  const [establishedYear, setEstablishedYear] = useState(
-    member.established.split("-")[0]
-  );
+  const [name, setName] = useState(cooperative.name);
+  const [email, setEmail] = useState(cooperative.email || "");
+  const [phoneNumber, setPhoneNumber] = useState(cooperative.phoneNumber || "");
+  const [websiteUrl, setWebsiteUrl] = useState(cooperative.websiteUrl || "");
+  const [address, setAddress] = useState(cooperative.address || "");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const updateMember = useMutation(api.members.updateMember);
+  const updateCooperative = useMutation(api.cooperatives.updateCooperative);
 
   // Reset form when modal opens
   useEffect(() => {
     if (open) {
-      setName(member.name);
-      setEmail(member.email);
-      setPhoneNumber(member.phoneNumber);
-      setWebsiteUrl(member.websiteUrl || "");
-      setAddress(member.address);
-      setNumberOfMembers(member.numberOfMembers.toString());
-      setEstablishedMonth(member.established.split("-")[1]);
-      setEstablishedYear(member.established.split("-")[0]);
+      setName(cooperative.name);
+      setEmail(cooperative.email || "");
+      setPhoneNumber(cooperative.phoneNumber || "");
+      setWebsiteUrl(cooperative.websiteUrl || "");
+      setAddress(cooperative.address || "");
     }
-  }, [open, member]);
+  }, [open, cooperative]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name.trim()) {
-      toast.error("Please enter organization name");
+      toast.error("Please enter cooperative name");
       return;
     }
 
@@ -98,16 +80,6 @@ const UpdateMemberModal = ({ member }: UpdateMemberModalProps) => {
 
     if (!address.trim()) {
       toast.error("Please enter address");
-      return;
-    }
-
-    if (!numberOfMembers.trim() || parseInt(numberOfMembers) < 1) {
-      toast.error("Please enter valid number of members");
-      return;
-    }
-
-    if (!establishedMonth || !establishedYear) {
-      toast.error("Please select established date");
       return;
     }
 
@@ -133,120 +105,55 @@ const UpdateMemberModal = ({ member }: UpdateMemberModalProps) => {
     setIsSubmitting(true);
 
     try {
-      const established = `${establishedYear}-${establishedMonth.padStart(2, "0")}`;
-
-      await updateMember({
-        id: member._id,
+      await updateCooperative({
+        id: cooperative._id,
         name: name.trim(),
         email: email.trim(),
         phoneNumber: phoneNumber.trim(),
         websiteUrl: finalWebsiteUrl,
         address: address.trim(),
-        numberOfMembers: parseInt(numberOfMembers),
-        established: established,
       });
 
-      toast.success("Member updated successfully!");
+      toast.success("Cooperative updated successfully!");
       setOpen(false);
     } catch (error) {
-      console.error("Error updating member:", error);
+      console.error("Error updating cooperative:", error);
       toast.error(
         error instanceof Error
           ? error.message
-          : "Failed to update member. Please try again."
+          : "Failed to update cooperative. Please try again."
       );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 1899 }, (_, i) =>
-    (currentYear - i).toString()
-  );
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger >
-        {/* <Button size='icon' className=''>
-          <Edit />
-        </Button> */}
-        <Edit className='w-5 h-5 text-amber-700 dark:text-amber-500' />
+      <DialogTrigger asChild>
+        <Button size='icon' variant={'outline'} className=''>
+          <Edit className='w-5 h-5 text-amber-700 dark:text-amber-500' />
+        </Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[600px] max-h-[90vh] overflow-y-auto'>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Update Member</DialogTitle>
+            <DialogTitle>Update Cooperative</DialogTitle> {/* Fixed title */}
             <DialogDescription>
-              Edit the member details and save your changes.
+              Edit the cooperative details and save your changes.
             </DialogDescription>
           </DialogHeader>
 
           <div className='grid gap-4 py-4'>
             {/* Organization Name */}
             <div className='grid gap-3'>
-              <Label htmlFor='name'>Organization Name *</Label>
+              <Label htmlFor='name'>Cooperative Name *</Label>
               <Input
                 id='name'
-                placeholder='Enter organization name'
+                placeholder='Enter cooperative name'
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 maxLength={200}
-              />
-            </div>
-
-            {/* Established Date */}
-            <div className='grid gap-3'>
-              <Label>Established Date *</Label>
-              <div className='grid grid-cols-2 gap-4'>
-                <Select
-                  value={establishedMonth}
-                  onValueChange={setEstablishedMonth}>
-                  <SelectTrigger>
-                    <SelectValue placeholder='Month' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='01'>January</SelectItem>
-                    <SelectItem value='02'>February</SelectItem>
-                    <SelectItem value='03'>March</SelectItem>
-                    <SelectItem value='04'>April</SelectItem>
-                    <SelectItem value='05'>May</SelectItem>
-                    <SelectItem value='06'>June</SelectItem>
-                    <SelectItem value='07'>July</SelectItem>
-                    <SelectItem value='08'>August</SelectItem>
-                    <SelectItem value='09'>September</SelectItem>
-                    <SelectItem value='10'>October</SelectItem>
-                    <SelectItem value='11'>November</SelectItem>
-                    <SelectItem value='12'>December</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select
-                  value={establishedYear}
-                  onValueChange={setEstablishedYear}>
-                  <SelectTrigger>
-                    <SelectValue placeholder='Year' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {years.map((year) => (
-                      <SelectItem key={year} value={year}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Number of Members */}
-            <div className='grid gap-3'>
-              <Label htmlFor='numberOfMembers'>Number of Members *</Label>
-              <Input
-                id='numberOfMembers'
-                type='number'
-                min='1'
-                placeholder='Enter number of members'
-                value={numberOfMembers}
-                onChange={(e) => setNumberOfMembers(e.target.value)}
               />
             </div>
 
@@ -316,7 +223,7 @@ const UpdateMemberModal = ({ member }: UpdateMemberModalProps) => {
                   Updating...
                 </>
               ) : (
-                "Update Member"
+                "Update Cooperative"
               )}
             </Button>
           </DialogFooter>
@@ -326,4 +233,4 @@ const UpdateMemberModal = ({ member }: UpdateMemberModalProps) => {
   );
 };
 
-export default UpdateMemberModal;
+export default UpdateCooperativeModal;

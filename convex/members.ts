@@ -75,6 +75,14 @@ function validateNumberOfMembers(count: number): void {
   }
 }
 
+// Helper function to validate status
+function validateStatus(status: string): "active" | "inactive" | "processing" {
+  if (!["active", "inactive", "processing"].includes(status)) {
+    throw new Error("Status must be one of: active, inactive, or processing");
+  }
+  return status as "active" | "inactive" | "processing";
+}
+
 // Query to get all members
 export const getAllMembers = query({
   args: {},
@@ -86,20 +94,45 @@ export const getAllMembers = query({
   },
 });
 
+// Query to get members by status
+export const getMembersByStatus = query({
+  args: {
+    status: v.union(
+      v.literal("active"),
+      v.literal("inactive"),
+      v.literal("processing")
+    ),
+  },
+  handler: async (ctx, args) => {
+    const members = await ctx.db
+      .query("members")
+      .withIndex("by_status", (q) => q.eq("status", args.status))
+      .collect();
+
+    return members.sort((a, b) => a.name.localeCompare(b.name));
+  },
+});
+
 // Mutation to add a new member
 export const addMember = mutation({
   args: {
     name: v.string(),
-    established: v.string(),
-    email: v.string(),
-    phoneNumber: v.string(),
+    established: v.optional(v.string()),
+    email: v.optional(v.string()),
+    phoneNumber: v.optional(v.string()),
     websiteUrl: v.optional(v.string()),
-    address: v.string(),
-    status: v.optional(v.boolean()),
-    numberOfMembers: v.number(),
+    address: v.optional(v.string()),
+    status: v.optional(
+      v.union(
+        v.literal("active"),
+        v.literal("inactive"),
+        v.literal("processing")
+      )
+    ),
+    numberOfMembers: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    // Sanitize and validate name
+    // Sanitize and validate name (only required field)
     const sanitizedName = sanitizeString(args.name);
     if (!sanitizedName || sanitizedName.length === 0) {
       throw new Error("Name is required");
@@ -111,59 +144,83 @@ export const addMember = mutation({
       throw new Error("Name is too long (max 200 characters)");
     }
 
-    // Validate established date
-    validateEstablishedDate(args.established);
+    // Prepare member data with only provided fields
+    const memberData: {
+      name: string;
+      established?: string;
+      email?: string;
+      phoneNumber?: string;
+      websiteUrl?: string;
+      address?: string;
+      status: "active" | "inactive" | "processing";
+      numberOfMembers?: number;
+    } = {
+      name: sanitizedName,
+      status: "processing", // Default status
+    };
 
-    // Sanitize and validate email
-    const sanitizedEmail = sanitizeString(args.email).toLowerCase();
-    validateEmail(sanitizedEmail);
-
-    // Check if email already exists
-    const existingEmail = await ctx.db
-      .query("members")
-      .withIndex("by_email", (q) => q.eq("email", sanitizedEmail))
-      .first();
-
-    if (existingEmail) {
-      throw new Error("A member with this email already exists");
+    // Validate and add established date if provided
+    if (args.established && args.established.trim().length > 0) {
+      validateEstablishedDate(args.established);
+      memberData.established = args.established;
     }
 
-    // Sanitize and validate phone number
-    const sanitizedPhone = validatePhoneNumber(args.phoneNumber);
+    // Validate and add email if provided
+    if (args.email && args.email.trim().length > 0) {
+      const sanitizedEmail = sanitizeString(args.email).toLowerCase();
+      validateEmail(sanitizedEmail);
 
-    // Sanitize and validate website URL if provided
-    let sanitizedWebsiteUrl: string | undefined = undefined;
+      // Check if email already exists
+      const existingEmail = await ctx.db
+        .query("members")
+        .withIndex("by_email", (q) => q.eq("email", sanitizedEmail))
+        .first();
+
+      if (existingEmail) {
+        throw new Error("A member with this email already exists");
+      }
+
+      memberData.email = sanitizedEmail;
+    }
+
+    // Validate and add phone number if provided
+    if (args.phoneNumber && args.phoneNumber.trim().length > 0) {
+      const sanitizedPhone = validatePhoneNumber(args.phoneNumber);
+      memberData.phoneNumber = sanitizedPhone;
+    }
+
+    // Validate and add website URL if provided
     if (args.websiteUrl && args.websiteUrl.trim().length > 0) {
-      sanitizedWebsiteUrl = sanitizeString(args.websiteUrl).toLowerCase();
+      const sanitizedWebsiteUrl = sanitizeString(args.websiteUrl).toLowerCase();
       validateUrl(sanitizedWebsiteUrl);
+      memberData.websiteUrl = sanitizedWebsiteUrl;
     }
 
-    // Sanitize and validate address
-    const sanitizedAddress = sanitizeString(args.address);
-    if (!sanitizedAddress || sanitizedAddress.length === 0) {
-      throw new Error("Address is required");
-    }
-    if (sanitizedAddress.length < 10) {
-      throw new Error("Address must be at least 10 characters");
-    }
-    if (sanitizedAddress.length > 500) {
-      throw new Error("Address is too long (max 500 characters)");
+    // Sanitize and add address if provided
+    if (args.address && args.address.trim().length > 0) {
+      const sanitizedAddress = sanitizeString(args.address);
+      if (sanitizedAddress.length < 10) {
+        throw new Error("Address must be at least 10 characters if provided");
+      }
+      if (sanitizedAddress.length > 500) {
+        throw new Error("Address is too long (max 500 characters)");
+      }
+      memberData.address = sanitizedAddress;
     }
 
-    // Validate number of members
-    validateNumberOfMembers(args.numberOfMembers);
+    // Validate and add status if provided
+    if (args.status !== undefined) {
+      memberData.status = validateStatus(args.status);
+    }
+
+    // Validate and add number of members if provided
+    if (args.numberOfMembers !== undefined) {
+      validateNumberOfMembers(args.numberOfMembers);
+      memberData.numberOfMembers = args.numberOfMembers;
+    }
 
     // Insert member
-    const memberId = await ctx.db.insert("members", {
-      name: sanitizedName,
-      established: args.established,
-      email: sanitizedEmail,
-      phoneNumber: sanitizedPhone,
-      websiteUrl: sanitizedWebsiteUrl,
-      address: sanitizedAddress,
-      status: args.status !== undefined ? args.status : true, // Default to active
-      numberOfMembers: args.numberOfMembers,
-    });
+    const memberId = await ctx.db.insert("members", memberData);
 
     return memberId;
   },
@@ -179,7 +236,13 @@ export const updateMember = mutation({
     phoneNumber: v.optional(v.string()),
     websiteUrl: v.optional(v.string()),
     address: v.optional(v.string()),
-    status: v.optional(v.boolean()),
+    status: v.optional(
+      v.union(
+        v.literal("active"),
+        v.literal("inactive"),
+        v.literal("processing")
+      )
+    ),
     numberOfMembers: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
@@ -199,7 +262,7 @@ export const updateMember = mutation({
       phoneNumber?: string;
       websiteUrl?: string;
       address?: string;
-      status?: boolean;
+      status?: "active" | "inactive" | "processing";
       numberOfMembers?: number;
     } = {};
 
@@ -220,74 +283,94 @@ export const updateMember = mutation({
 
     // Validate established date if provided
     if (updateFields.established !== undefined) {
-      validateEstablishedDate(updateFields.established);
-      updateData.established = updateFields.established;
+      if (updateFields.established.trim().length > 0) {
+        validateEstablishedDate(updateFields.established);
+        updateData.established = updateFields.established;
+      } else {
+        // Allow clearing the established date by providing empty string
+        updateData.established = undefined;
+      }
     }
 
     // Sanitize and validate email if provided
     if (updateFields.email !== undefined) {
-      const sanitizedEmail = sanitizeString(updateFields.email).toLowerCase();
-      validateEmail(sanitizedEmail);
+      if (updateFields.email.trim().length > 0) {
+        const sanitizedEmail = sanitizeString(updateFields.email).toLowerCase();
+        validateEmail(sanitizedEmail);
 
-      // Check if email already exists (excluding current member)
-      const existingEmail = await ctx.db
-        .query("members")
-        .withIndex("by_email", (q) => q.eq("email", sanitizedEmail))
-        .first();
+        // Check if email already exists (excluding current member)
+        const existingEmail = await ctx.db
+          .query("members")
+          .withIndex("by_email", (q) => q.eq("email", sanitizedEmail))
+          .first();
 
-      if (existingEmail && existingEmail._id !== id) {
-        throw new Error("A member with this email already exists");
+        if (existingEmail && existingEmail._id !== id) {
+          throw new Error("A member with this email already exists");
+        }
+
+        updateData.email = sanitizedEmail;
+      } else {
+        // Allow clearing the email by providing empty string
+        updateData.email = undefined;
       }
-
-      updateData.email = sanitizedEmail;
     }
 
     // Sanitize and validate phone number if provided
     if (updateFields.phoneNumber !== undefined) {
-      const sanitizedPhone = validatePhoneNumber(updateFields.phoneNumber);
-      updateData.phoneNumber = sanitizedPhone;
+      if (updateFields.phoneNumber.trim().length > 0) {
+        const sanitizedPhone = validatePhoneNumber(updateFields.phoneNumber);
+        updateData.phoneNumber = sanitizedPhone;
+      } else {
+        // Allow clearing the phone number by providing empty string
+        updateData.phoneNumber = undefined;
+      }
     }
 
     // Sanitize and validate website URL if provided
     if (updateFields.websiteUrl !== undefined) {
-      if (
-        updateFields.websiteUrl &&
-        updateFields.websiteUrl.trim().length > 0
-      ) {
+      if (updateFields.websiteUrl.trim().length > 0) {
         const sanitizedWebsiteUrl = sanitizeString(
           updateFields.websiteUrl
         ).toLowerCase();
         validateUrl(sanitizedWebsiteUrl);
         updateData.websiteUrl = sanitizedWebsiteUrl;
       } else {
+        // Allow clearing the website URL by providing empty string
         updateData.websiteUrl = undefined;
       }
     }
 
     // Sanitize and validate address if provided
     if (updateFields.address !== undefined) {
-      const sanitizedAddress = sanitizeString(updateFields.address);
-      if (!sanitizedAddress || sanitizedAddress.length === 0) {
-        throw new Error("Address cannot be empty");
+      if (updateFields.address.trim().length > 0) {
+        const sanitizedAddress = sanitizeString(updateFields.address);
+        if (sanitizedAddress.length < 10) {
+          throw new Error("Address must be at least 10 characters if provided");
+        }
+        if (sanitizedAddress.length > 500) {
+          throw new Error("Address is too long (max 500 characters)");
+        }
+        updateData.address = sanitizedAddress;
+      } else {
+        // Allow clearing the address by providing empty string
+        updateData.address = undefined;
       }
-      if (sanitizedAddress.length < 10) {
-        throw new Error("Address must be at least 10 characters");
-      }
-      if (sanitizedAddress.length > 500) {
-        throw new Error("Address is too long (max 500 characters)");
-      }
-      updateData.address = sanitizedAddress;
     }
 
-    // Update status if provided
+    // Validate and update status if provided
     if (updateFields.status !== undefined) {
-      updateData.status = updateFields.status;
+      updateData.status = validateStatus(updateFields.status);
     }
 
     // Validate number of members if provided
     if (updateFields.numberOfMembers !== undefined) {
-      validateNumberOfMembers(updateFields.numberOfMembers);
-      updateData.numberOfMembers = updateFields.numberOfMembers;
+      if (updateFields.numberOfMembers > 0) {
+        validateNumberOfMembers(updateFields.numberOfMembers);
+        updateData.numberOfMembers = updateFields.numberOfMembers;
+      } else {
+        // Allow clearing the number of members by providing 0 or negative
+        updateData.numberOfMembers = undefined;
+      }
     }
 
     // Only update if there are changes
@@ -296,6 +379,35 @@ export const updateMember = mutation({
     }
 
     return { success: true };
+  },
+});
+
+// Mutation to update member status
+export const updateMemberStatus = mutation({
+  args: {
+    id: v.id("members"),
+    status: v.union(
+      v.literal("active"),
+      v.literal("inactive"),
+      v.literal("processing")
+    ),
+  },
+  handler: async (ctx, args) => {
+    const { id, status } = args;
+
+    // Check if member exists
+    const existingMember = await ctx.db.get(id);
+    if (!existingMember) {
+      throw new Error("Member not found");
+    }
+
+    // Validate status
+    const validatedStatus = validateStatus(status);
+
+    // Update status
+    await ctx.db.patch(id, { status: validatedStatus });
+
+    return { success: true, newStatus: validatedStatus };
   },
 });
 

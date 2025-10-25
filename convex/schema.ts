@@ -2,6 +2,33 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  users: defineTable({
+    email: v.string(),
+    tokenIdentifier: v.string(),
+    phoneNo: v.optional(v.string()),
+    coopName: v.optional(v.string()),
+    role: v.optional(
+      v.union(v.literal("null"), v.literal("coop"), v.literal("admin"))
+    ),
+  }).index("by_token", ["tokenIdentifier"]),
+
+  cooperatives: defineTable({
+    name: v.string(),
+    email: v.optional(v.string()),
+    phoneNumber: v.optional(v.string()),
+    websiteUrl: v.optional(v.string()),
+    address: v.optional(v.string()),
+    certificate: v.optional(v.string()),
+    paymentReceipt: v.optional(v.string()),
+    status: v.union(
+      v.literal("inactive"),
+      v.literal("active"),
+      v.literal("processing")
+    ),
+  })
+    .index("by_name", ["name"])
+    .index("by_status", ["status"]).index("by_email", ["email"]),
+
   testimonials: defineTable({
     name: v.string(),
     body: v.string(),
@@ -32,13 +59,11 @@ export default defineSchema({
     name: v.string(),
     registrationCertificate: v.string(), // Storage ID for image or PDF
     paymentReceipt: v.string(), // Storage ID for image or PDF
-    established: v.string(), // Format: "YYYY-MM" e.g., "2024-01"
-    numberOfMembers: v.number(),
     email: v.string(),
     phoneNumber: v.string(),
     websiteUrl: v.optional(v.string()),
     address: v.string(),
-    status: v.optional(v.boolean()), // Approval status, default false (pending)
+    status: v.boolean(),
   })
     .index("by_email", ["email"])
     .index("by_name", ["name"])
@@ -46,13 +71,17 @@ export default defineSchema({
 
   members: defineTable({
     name: v.string(),
-    established: v.string(), // Format: "YYYY-MM" e.g., "2024-01"
-    email: v.string(),
-    phoneNumber: v.string(),
+    established: v.optional(v.string()),
+    email: v.optional(v.string()),
+    phoneNumber: v.optional(v.string()),
     websiteUrl: v.optional(v.string()),
-    address: v.string(),
-    status: v.optional(v.boolean()), // Active/Inactive status
-    numberOfMembers: v.number(),
+    address: v.optional(v.string()),
+    status: v.union(
+      v.literal("inactive"),
+      v.literal("active"),
+      v.literal("processing")
+    ),
+    numberOfMembers: v.optional(v.number()),
   })
     .index("by_email", ["email"])
     .index("by_name", ["name"])

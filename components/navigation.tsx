@@ -31,8 +31,8 @@ export function Navigation() {
       href: "/about-fedcoop",
     },
     {
-      title: "Members",
-      href: "/members",
+      title: "Cooperatives",
+      href: "/cooperatives",
     },
     {
       title: "News",
