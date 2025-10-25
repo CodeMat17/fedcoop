@@ -17,7 +17,7 @@ export function TestimonialSection() {
           </h2>
           <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
             Hear from our member cooperative societies about their partnership
-            with FedCoop and how we&apos;ve supported their growth and
+            with FEDCOOP and how we&apos;ve supported their growth and
             development.
           </p>
         </div>
@@ -64,7 +64,7 @@ export function TestimonialSection() {
 
         <div className='text-center mt-12'>
           <p className='text-sm text-muted-foreground'>
-            Join hundreds of cooperative societies that trust FedCoop as their
+            Join hundreds of cooperative societies that trust FEDCOOP as their
             financial partner and development ally.
           </p>
         </div>

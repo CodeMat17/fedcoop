@@ -116,7 +116,7 @@ const DirectorsPage = () => {
                   <p className='text-muted-foreground leading-relaxed text-lg max-w-4xl mx-auto'>
                     Our Directors consists of dedicated members elected by the
                     cooperative&apos;s membership. Each position plays a crucial
-                    role in ensuring the smooth operation and growth of FedCoop,
+                    role in ensuring the smooth operation and growth of FEDCOOP,
                     serving our members with integrity, transparency, and
                     unwavering commitment to our shared values.
                   </p>

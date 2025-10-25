@@ -68,7 +68,7 @@ export function Navigation() {
           <Link href='/'>
             <div className='flex items-center space-x-2'>
               <Image src='/logo.webp' alt='FedCoop' width={50} height={50} />
-              <span className='text-xl font-bold'>FEDCOOP</span>
+              <span className='text-xl font-bold md:hidden lg:block'>FEDCOOP</span>
             </div>
           </Link>
 
@@ -81,7 +81,8 @@ export function Navigation() {
                   <NavigationMenuItem key={item.title}>
                     <NavigationMenuLink
                       href={item.href}
-                      className={`group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 ${
+                      className={`group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent/40 dark:hover:bg-accent
+                        hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 ${
                         isActive
                           ? "text-yellow-600 dark:text-yellow-500 font-semibold"
                           : "text-foreground"

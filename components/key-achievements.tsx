@@ -44,7 +44,7 @@ export function KeyAchievements() {
           </h2>
           <p className='text-xl text-muted-foreground max-w-3xl mx-auto'>
             Discover the remarkable milestones and accomplishments that showcase
-            FedCoop&apos;s commitment to empowering federal government staff
+            FEDCOOP&apos;s commitment to empowering federal government staff
             through cooperative excellence and sustainable economic growth.
           </p>
         </motion.div>
@@ -163,7 +163,7 @@ export function KeyAchievements() {
                     </div>
                     <h4 className='text-xl font-bold mb-2'>Growing Together</h4>
                     <p className='text-muted-foreground'>
-                      FedCoop&apos;s member cooperatives continue to grow,
+                      FEDCOOP&apos;s member cooperatives continue to grow,
                       creating sustainable economic impact across Nigeria.
                     </p>
                   </div>
