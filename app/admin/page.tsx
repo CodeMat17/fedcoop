@@ -20,8 +20,8 @@ import DeleteTestimonialModal from "./_components/DeleteTestimonialModal";
 import UpdateExcoModal from "./_components/UpdateExcoModal";
 import UpdateNewsModal from "./_components/UpdateNewsModal";
 import UpdateTestimonialModal from "./_components/UpdateTestimonialModal";
-import RegistrationContent from "./_components/container/RegistrationContent";
 import CooperativesContent from "./_components/container/CooperativesContent";
+import ActivationContent from "./_components/container/ActivationContent";
 
 const AdminPage = () => {
   const news = useQuery(api.news.getAllNews);
@@ -52,12 +52,12 @@ const AdminPage = () => {
         Admin Management Page
       </h1>
       <div className='flex w-full flex-col gap-6'>
-        <Tabs defaultValue='registration'>
+        <Tabs defaultValue='activation'>
           <TabsList className='w-full flex flex-wrap justify-start gap-2 py-2 px-1'>
             <TabsTrigger
-              value='registration'
+              value='activation'
               className='whitespace-nowrap px-3 py-2 text-sm'>
-              Registration
+              Activation
             </TabsTrigger>
             <TabsTrigger
               value='cooperatives'
@@ -86,8 +86,8 @@ const AdminPage = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value='registration'>
-            <RegistrationContent />
+          <TabsContent value='activation'>
+            <ActivationContent />
           </TabsContent>
 
           <TabsContent value='cooperatives'>

@@ -26,6 +26,33 @@ const AddCooperativeModal = () => {
 
   const addCooperative = useMutation(api.cooperatives.addCooperative);
 
+  // Function to extract clean error message from Convex error
+  const getCleanErrorMessage = (error: unknown): string => {
+    if (error instanceof Error) {
+      const message = error.message;
+
+      // Check if it's a Convex server error with the format we want to clean
+      if (message.includes("[CONVEX") && message.includes("Server Error")) {
+        // Extract the actual error message after "Uncaught Error: "
+        const uncaughtErrorIndex = message.indexOf("Uncaught Error: ");
+        if (uncaughtErrorIndex !== -1) {
+          return message.substring(
+            uncaughtErrorIndex + "Uncaught Error: ".length
+          );
+        }
+
+        // If we can't extract a clean message, return a generic one
+        return "A cooperative with this name already exists";
+      }
+
+      // Return the original message if it's not a Convex server error
+      return message;
+    }
+
+    // Fallback for non-Error objects
+    return "Failed to add cooperative. Please try again.";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -34,19 +61,17 @@ const AddCooperativeModal = () => {
       return;
     }
 
-    if (name.trim().length < 10) {
-      toast.error("Name must be at least 10 characters");
+    if (name.trim().length < 2) {
+      // Changed from 10 to 2 to match your mutation
+      toast.error("Name must be at least 2 characters");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-     
-
       await addCooperative({
         name: name.trim(),
-        // status: "inactive", 
       });
 
       toast.success("Cooperative added successfully!");
@@ -56,16 +81,14 @@ const AddCooperativeModal = () => {
       setOpen(false);
     } catch (error) {
       console.error("Error adding cooperative:", error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to add cooperative. Please try again."
-      );
+
+      // Use the clean error message function
+      const cleanErrorMessage = getCleanErrorMessage(error);
+      toast.error(cleanErrorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -75,7 +98,7 @@ const AddCooperativeModal = () => {
       <DialogContent className='sm:max-w-[600px] max-h-[90vh] overflow-y-auto'>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add Member</DialogTitle>
+            <DialogTitle>Add Cooperative</DialogTitle>
             <DialogDescription>
               Add a new cooperative. All required fields must be filled.
             </DialogDescription>

@@ -25,7 +25,7 @@ import { Loader2, Minus, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-const RegistrationContent = () => {
+const ActivationContent = () => {
   // Fetch processing cooperatives
   const processingCooperatives = useQuery(
     api.cooperatives.getCooperativesByStatus,
@@ -127,7 +127,7 @@ const RegistrationContent = () => {
   return (
     <div className='py-5'>
       <h1 className='text-2xl sm:text-3xl font-semibold mb-4'>
-        Registration Requests
+        Activation Requests
       </h1>
 
       <div className='grid gap-6'>
@@ -173,13 +173,13 @@ const RegistrationContent = () => {
         {filteredRegistrations === undefined ? (
           <div className='flex px-4 py-32 items-center justify-center'>
             <Minus className='w-4 h-4 animate-spin mr-2' />
-            Loading registration details...
+            Loading activation details...
           </div>
         ) : filteredRegistrations.length === 0 ? (
           <div className='text-center px-4 py-32 text-muted-foreground'>
             {regSearchQuery || statusFilter !== "all"
-              ? "No matching registrations found"
-              : "No registration requests found"}
+              ? "No matching activation requests found"
+              : "No activation requests found"}
           </div>
         ) : (
           <div className='space-y-6'>
@@ -397,4 +397,4 @@ const RegistrationContent = () => {
   );
 };
 
-export default RegistrationContent;
+export default ActivationContent;
