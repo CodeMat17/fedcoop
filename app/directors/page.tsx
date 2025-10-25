@@ -29,7 +29,7 @@ const DirectorsPage = () => {
             FEDCOOP Board of Directors
           </h1>
           <p className='text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
-            Meet the dedicated leaders serving FedCoop&apos;s members and
+            Meet the dedicated leaders serving FEDCOOP&apos;s members and
             community with passion and expertise
           </p>
         </div>
