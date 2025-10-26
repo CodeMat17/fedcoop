@@ -53,7 +53,7 @@ const AccessDeniedPage = () => {
               </span>
             </Link>
           </Button>
-          <UserButton />
+        
           {/* <Button asChild size='lg' variant='outline' className='group'>
             <Link href='/sign-in'>
               <span className='flex items-center gap-2'>
