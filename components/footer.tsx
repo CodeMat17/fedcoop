@@ -46,8 +46,7 @@ export function Footer() {
       icon: Twitter,
       href: "https://x.com/FEDCOOP_ng",
     },
-    { name: "LinkedIn", icon: Linkedin, href: "" },
-    { name: "Instagram", icon: Instagram, href: "" },
+    { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/fedcoop_ng/" },
   ];
 
   return (
