@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,10 +17,7 @@ import { useState } from "react";
 import { ThemeToggle } from "./theme-toggle";
 
 export function Navigation() {
-  const { user } = useUser();
   // Get user role from session claims
-  const userRole = user?.publicMetadata?.role as string;
-  const isAdmin = userRole === "admin";
 
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
