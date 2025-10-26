@@ -1,8 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { SignedIn } from "@clerk/clerk-react";
-import { UserButton } from "@clerk/nextjs";
 import { Home, ShieldX } from "lucide-react";
 import Link from "next/link";
 
@@ -42,7 +40,7 @@ const AccessDeniedPage = () => {
           This section is restricted to authorized administrators only.
         </p>
 
-        <SignedIn>
+      
         {/* Action buttons */}
         <div className=''>
           <Button asChild size='lg' className='group relative overflow-hidden'>
@@ -63,7 +61,7 @@ const AccessDeniedPage = () => {
             </Link>
           </Button> */}
         </div>
-        </SignedIn>
+     
 
         {/* Additional info */}
         <p className='mt-12 text-sm text-muted-foreground/60'>
