@@ -22,6 +22,9 @@ import UpdateNewsModal from "./_components/UpdateNewsModal";
 import UpdateTestimonialModal from "./_components/UpdateTestimonialModal";
 import CooperativesContent from "./_components/container/CooperativesContent";
 import ActivationContent from "./_components/container/ActivationContent";
+import HeroPage from "./_components/container/HeroPage";
+import MissionVision from "./_components/container/MissionVision";
+import OurRoleEditor from "./_components/container/OurRoleEditor";
 
 const AdminPage = () => {
   const news = useQuery(api.news.getAllNews);
@@ -65,6 +68,16 @@ const AdminPage = () => {
               Cooperatives
             </TabsTrigger>
             <TabsTrigger
+              value='hero'
+              className='whitespace-nowrap px-3 py-2 text-sm'>
+              Hero Page
+            </TabsTrigger>
+            <TabsTrigger
+              value='mission'
+              className='whitespace-nowrap px-3 py-2 text-sm'>
+              Mission / Vision
+            </TabsTrigger>
+            <TabsTrigger
               value='directors'
               className='whitespace-nowrap px-3 py-2 text-sm'>
               Directors
@@ -84,6 +97,11 @@ const AdminPage = () => {
               className='whitespace-nowrap px-3 py-2 text-sm'>
               Testimonials
             </TabsTrigger>
+            <TabsTrigger
+              value='role'
+              className='whitespace-nowrap px-3 py-2 text-sm'>
+              Our Role
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value='activation'>
@@ -92,6 +110,14 @@ const AdminPage = () => {
 
           <TabsContent value='cooperatives'>
             <CooperativesContent />
+          </TabsContent>
+
+          <TabsContent value='hero'>
+            <HeroPage />
+          </TabsContent>
+
+          <TabsContent value='mission'>
+            <MissionVision />
           </TabsContent>
 
           <TabsContent value='news'>
@@ -277,6 +303,10 @@ const AdminPage = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="role">
+<OurRoleEditor />
           </TabsContent>
         </Tabs>
       </div>

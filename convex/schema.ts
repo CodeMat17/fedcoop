@@ -27,7 +27,8 @@ export default defineSchema({
     ),
   })
     .index("by_name", ["name"])
-    .index("by_status", ["status"]).index("by_email", ["email"]),
+    .index("by_status", ["status"])
+    .index("by_email", ["email"]),
 
   testimonials: defineTable({
     name: v.string(),
@@ -86,4 +87,25 @@ export default defineSchema({
     .index("by_email", ["email"])
     .index("by_name", ["name"])
     .index("by_status", ["status"]),
+
+  hero: defineTable({
+    title: v.string(),
+    subtitle: v.string(),
+  }),
+
+  mission: defineTable({
+    title: v.string(),
+    body: v.string(),
+  }),
+
+  vision: defineTable({
+    title: v.string(),
+    body: v.string(),
+  }),
+
+  ourRole: defineTable({
+    title: v.string(),
+    content: v.string(),
+    imageUrl: v.optional(v.string()),
+  }),
 });

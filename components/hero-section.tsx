@@ -1,12 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { MembersMarquee } from "./members-marquee";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export function HeroSection() {
+  const hero = useQuery(api.hero.getHero);
+
   return (
     <section className='relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-primary/10 pt-20 xl:py-0'>
       {/* Background Pattern */}
@@ -42,34 +47,43 @@ export function HeroSection() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             className='space-y-8'>
-            <div className='space-y-4'>
-              {/* <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className='inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium bg-primary/10 text-primary'>
-                <Handshake className='w-4 h-4 mr-2' />
-                Uniting Workers Cooperatives
-              </motion.div> */}
+            {hero === undefined ? (
+              // Skeleton Loading State
+              <div className='space-y-4 xl:mt-16'>
+                {/* Title Skeleton - Multi-line to match your long title */}
+                <div className='space-y-3'>
+                  <Skeleton className='h-10 md:h-12 xl:h-14 w-full max-w-4xl rounded' />
+                  <Skeleton className='h-10 md:h-12 xl:h-14 w-full max-w-3xl rounded' />
+                  <Skeleton className='h-10 md:h-12 xl:h-14 w-full max-w-2xl rounded' />
+                </div>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className='text-4xl md:text-5xl xl:text-6xl font-bold tracking-tight xl:mt-12'>
-                Federation of Federal Government Staff Cooperatives (FEDCOOP)
-              </motion.h1>
+                {/* Subtitle Skeleton */}
+                <div className='space-y-2 pt-2'>
+                  <Skeleton className='h-6 w-full max-w-2xl rounded' />
+                  <Skeleton className='h-6 w-full max-w-xl rounded' />
+                  <Skeleton className='h-6 w-full max-w-lg rounded' />
+                </div>
+              </div>
+            ) : (
+              // Hero Content from Convex
+              <div className='space-y-4 xl:mt-16'>
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className='text-4xl md:text-5xl xl:text-[53px] font-bold tracking-tight'>
+                  {hero.title}
+                </motion.h1>
 
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className='text-xl text-muted-foreground max-w-2xl'>
-                Unifying Workers Cooperatives for a Better World through
-                Cooperation, Collaboration, Advocacy, Peer Review, Training and
-                Investment.
-              </motion.p>
-            </div>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                  className='text-xl text-muted-foreground max-w-2xl'>
+                  {hero.subtitle}
+                </motion.p>
+              </div>
+            )}
 
             {/* CTA Buttons */}
             <motion.div
@@ -81,25 +95,17 @@ export function HeroSection() {
                 <Link href='/cooperatives'>
                   <>
                     Join Us
-                    <ArrowRight
-                      className='ml-2 h-4 w-4
-                transition-transform group-hover:translate-x-1'
-                    />
+                    <ArrowRight className='ml-2 h-4 w-4 transition-transform group-hover:translate-x-1' />
                   </>
                 </Link>
-              </Button>                                                                                                   
+              </Button>
               <Button asChild variant='outline' size='lg'>
                 <Link href='/contact'>
                   <>
                     Contact Us
-                    <ArrowRight
-                      className='ml-2 h-4 w-4
-                transition-transform group-hover:translate-x-1'
-                    />
+                    <ArrowRight className='ml-2 h-4 w-4 transition-transform group-hover:translate-x-1' />
                   </>
                 </Link>
-              
-               
               </Button>
             </motion.div>
           </motion.div>
@@ -109,7 +115,7 @@ export function HeroSection() {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className='relative '>
+            className='relative'>
             <div className='relative flex justify-center'>
               {/* Marquee */}
               <MembersMarquee />

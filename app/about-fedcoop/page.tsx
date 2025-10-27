@@ -1,18 +1,25 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import {
   Building2,
+  Handshake,
+  Lightbulb,
   Shield,
   Target,
   Users,
-  Lightbulb,
-  Handshake,
 } from "lucide-react";
 import Image from "next/image";
 
 const AboutPage = () => {
+  const mission = useQuery(api.missionVision.getMission);
+  const vision = useQuery(api.missionVision.getVision);
+  const ourRole = useQuery(api.ourRole.getOurRoleWithImageUrl);
+
   const features = [
     {
       icon: Building2,
@@ -55,10 +62,9 @@ const AboutPage = () => {
               About FEDCOOP
             </h2>
             <p className='text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
-              The{" "}
+              
               <strong>
-                Federation of Federal Government Staff Cooperative Societies
-                (FEDCOOP){' '}
+                FEDCOOP{" "}
               </strong>
               is a secondary cooperative body that unites all Staff Cooperative
               Societies operating within Federal Government Ministries and MDAs.
@@ -95,38 +101,40 @@ const AboutPage = () => {
 
           {/* Main Content */}
           <div className='grid lg:grid-cols-2 gap-12 items-center mb-24'>
+            {/* Text Content - unchanged */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}>
-              <h3 className='text-3xl font-bold mb-6 text-foreground'>
-                Our Role in Nigeria&apos;s Development
-              </h3>
-              <div className='space-y-5 text-muted-foreground leading-relaxed'>
-                <p>
-                  FEDCOOP plays a pivotal role in shaping the cooperative
-                  landscape in Nigeria. We serve as the{" "}
-                  <strong>central coordinating body</strong> that advocates for
-                  policy reforms, ensures operational transparency, and builds
-                  capacity among member societies through training and digital
-                  transformation initiatives.
-                </p>
-                <p>
-                  We also facilitate partnerships between government agencies,
-                  private sector stakeholders, and cooperative institutions —
-                  creating an enabling environment for innovation, inclusive
-                  growth, and socio-economic resilience.
-                </p>
-                <p>
-                  By strengthening the financial and managerial capacity of
-                  cooperatives, FEDCOOP contributes to wealth creation,
-                  employment generation, and the overall stability of the
-                  Nigerian economy.
-                </p>
-              </div>
+              {ourRole === undefined ? (
+                // Skeleton for text content
+                <div className='space-y-6'>
+                  <Skeleton className='h-8 w-3/4 rounded' />
+                  <div className='space-y-4'>
+                    <Skeleton className='h-4 w-full rounded' />
+                    <Skeleton className='h-4 w-full rounded' />
+                    <Skeleton className='h-4 w-5/6 rounded' />
+                    <Skeleton className='h-4 w-full rounded' />
+                    <Skeleton className='h-4 w-4/5 rounded' />
+                    <Skeleton className='h-4 w-full rounded' />
+                    <Skeleton className='h-4 w-3/4 rounded' />
+                  </div>
+                </div>
+              ) : (
+                // Actual content
+                <>
+                  <h3 className='text-3xl font-bold mb-6 text-foreground'>
+                    {ourRole.title}
+                  </h3>
+                  <div className='space-y-5 text-muted-foreground leading-relaxed whitespace-pre-wrap'>
+                    {ourRole.content}
+                  </div>
+                </>
+              )}
             </motion.div>
 
+            {/* Image - Fixed section */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -135,18 +143,22 @@ const AboutPage = () => {
               className='relative'>
               <div className='flex justify-center'>
                 <Image
-                  src='/connected.svg'
-                  alt="Nigeria's Cooperative Development"
-                  width={380}
-                  height={380}
+                  src='/role.svg'
+                  alt=''
+                  width={480}
+                  height={480}
                   priority
+                  className='rounded-lg object-cover'
                 />
+
+            
               </div>
             </motion.div>
           </div>
 
           {/* Mission & Vision */}
           <div className='grid sm:grid-cols-2 gap-12 items-start mb-20'>
+            {/* Mission Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -157,13 +169,23 @@ const AboutPage = () => {
                 <Lightbulb className='w-6 h-6 text-primary' />
                 <h3 className='text-2xl font-semibold'>Our Mission</h3>
               </div>
-              <p className='text-muted-foreground leading-relaxed'>
-                To unify Workers Cooperatives for a Better World through
-                Cooperation, Collaboration, Advocacy, Peer Review, Training, Savings and
-                Investments.
-              </p>
+              {mission === undefined ? (
+                // Mission Skeleton - Multi-line to match mission content
+                <div className='space-y-3'>
+                  <Skeleton className='h-5 w-full rounded' />
+                  <Skeleton className='h-5 w-11/12 rounded' />
+                  <Skeleton className='h-5 w-10/12 rounded' />
+                  <Skeleton className='h-5 w-9/12 rounded' />
+                  <Skeleton className='h-5 w-full rounded' />
+                </div>
+              ) : (
+                <p className='text-muted-foreground leading-relaxed'>
+                  {mission.body}
+                </p>
+              )}
             </motion.div>
 
+            {/* Vision Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -174,9 +196,18 @@ const AboutPage = () => {
                 <Handshake className='w-6 h-6 text-primary' />
                 <h3 className='text-2xl font-semibold'>Our Vision</h3>
               </div>
-              <p className='text-muted-foreground leading-relaxed'>
-                A Cooperative Nigeria without Hunger & Poverty.
-              </p>
+              {vision === undefined ? (
+                // Vision Skeleton - Shorter for vision content
+                <div className='space-y-3'>
+                  <Skeleton className='h-5 w-full rounded' />
+                  <Skeleton className='h-5 w-2/3 rounded' />
+                  <Skeleton className='h-5 w-1/2 rounded' />
+                </div>
+              ) : (
+                <p className='text-muted-foreground leading-relaxed'>
+                  {vision.body}
+                </p>
+              )}
             </motion.div>
           </div>
 
