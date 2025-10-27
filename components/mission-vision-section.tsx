@@ -1,10 +1,16 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { Heart, TrendingUp } from "lucide-react";
 
 export function MissionVisionSection() {
+  const mission = useQuery(api.missionVision.getMission);
+  const vision = useQuery(api.missionVision.getVision);
+
   return (
     <section className='py-16 bg-gradient-to-br from-primary/5 via-background to-primary/8'>
       <div className='container'>
@@ -18,12 +24,13 @@ export function MissionVisionSection() {
             Our Mission & Vision
           </h2>
           <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
-            Driving Nigeria&apos;s cooperative movement towards a sustainable and
-            prosperous future.
+            Driving Nigeria&apos;s cooperative movement towards a sustainable
+            and prosperous future.
           </p>
         </motion.div>
 
         <div className='grid md:grid-cols-2 gap-8 max-w-4xl mx-auto'>
+          {/* Mission Card */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -37,15 +44,25 @@ export function MissionVisionSection() {
                   </div>
                   <h3 className='text-2xl font-bold'>Our Mission</h3>
                 </div>
-                <p className='text-muted-foreground leading-relaxed'>
-                  To unify Workers Cooperatives for a Better World through
-                  Cooperation, Collaboration, Advocacy, Peer Review, Training, Savings
-                  and Investments.
-                </p>
+                {mission === undefined ? (
+                  // Mission Skeleton
+                  <div className='space-y-3'>
+                    <Skeleton className='h-4 w-full rounded' />
+                    <Skeleton className='h-4 w-11/12 rounded' />
+                    <Skeleton className='h-4 w-10/12 rounded' />
+                    <Skeleton className='h-4 w-9/12 rounded' />
+                    <Skeleton className='h-4 w-full rounded' />
+                  </div>
+                ) : (
+                  <p className='text-muted-foreground leading-relaxed'>
+                    {mission.body}
+                  </p>
+                )}
               </CardContent>
             </Card>
           </motion.div>
 
+          {/* Vision Card */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -59,9 +76,18 @@ export function MissionVisionSection() {
                   </div>
                   <h3 className='text-2xl font-bold'>Our Vision</h3>
                 </div>
-                <p className='text-muted-foreground leading-relaxed'>
-                  A Cooperative Nigeria without Hunger & Poverty. 
-                </p>
+                {vision === undefined ? (
+                  // Vision Skeleton
+                  <div className='space-y-3'>
+                    <Skeleton className='h-4 w-full rounded' />
+                    <Skeleton className='h-4 w-2/3 rounded' />
+                    <Skeleton className='h-4 w-1/2 rounded' />
+                  </div>
+                ) : (
+                  <p className='text-muted-foreground leading-relaxed'>
+                    {vision.body}
+                  </p>
+                )}
               </CardContent>
             </Card>
           </motion.div>

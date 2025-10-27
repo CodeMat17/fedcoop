@@ -2,8 +2,8 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "FedCoop - Federation of Federal Government Staff Cooperative Societies",
-    short_name: "FedCoop",
+    name: "FEDCOOP - Federation of Federal Government Staff Cooperative Societies",
+    short_name: "FEDCOOP",
     description:
       "Unifying Workers Cooperatives for a Better World through Cooperation, Collaboration, Advocacy, Peer Review, Training and Investment.",
     start_url: "/",

@@ -12,96 +12,103 @@ import {
   Shield,
   Target,
   Users,
+  BookOpen,
+  Leaf,
+  HeartHandshake,
+  TrendingUp,
+  LucideIcon,
 } from "lucide-react";
 import Image from "next/image";
+import React from "react";
+
+// Map icon names to actual components with proper typing - FIXED MAPPINGS
+const iconMap: Record<string, LucideIcon> = {
+  Users: Users,
+  Shield: Shield,
+  BookOpen: BookOpen, // Fixed: Using actual BookOpen icon
+  Leaf: Leaf, // Fixed: Using actual Leaf icon
+  Building: Building2,
+  Building2: Building2, // Added Building2 mapping
+  Target: Target,
+  HeartHandshake: HeartHandshake, // Fixed: Using actual HeartHandshake icon
+  TrendingUp: TrendingUp, // Fixed: Using actual TrendingUp icon
+};
+
+// Get icon component from name with proper typing
+const getIconComponent = (iconName: string): React.JSX.Element => {
+  const IconComponent = iconMap[iconName] || Users;
+  return <IconComponent className='w-6 h-6 text-primary' />;
+};
 
 const AboutPage = () => {
+  const about = useQuery(api.about.getAbout);
+  const aboutFeatures = useQuery(api.about.getAboutFeatures);
   const mission = useQuery(api.missionVision.getMission);
   const vision = useQuery(api.missionVision.getVision);
   const ourRole = useQuery(api.ourRole.getOurRoleWithImageUrl);
 
-  const features = [
-    {
-      icon: Building2,
-      title: "Secondary Society",
-      description:
-        "FEDCOOP stands as the apex cooperative institution for all Staff Cooperative Societies in Federal Government Ministries, Departments, and Agencies (MDAs) across Nigeria.",
-    },
-    {
-      icon: Users,
-      title: "Worker-Owned",
-      description:
-        "Our member cooperatives are owned, governed, and driven by their members, the workforce of the Nigerian federal system, ensuring inclusion and transparency.",
-    },
-    {
-      icon: Target,
-      title: "Economic Development",
-      description:
-        "Through cooperative financing, entrepreneurship, and mutual support, FEDCOOP significantly contributes to the economic empowerment of Nigerian workers and communities.",
-    },
-    {
-      icon: Shield,
-      title: "Strong Capital Base",
-      description:
-        "Member societies collectively hold assets and capital worth billions of naira, driving sustainable development and fostering financial independence.",
-    },
-  ];
+  // Debug: Log the features to see what icon names are actually coming from the database
+  React.useEffect(() => {
+    if (aboutFeatures) {
+      console.log("About Features from DB:", aboutFeatures);
+    }
+  }, [aboutFeatures]);
 
   return (
     <div>
       <section id='about' className='py-24 px-4 bg-muted/30'>
         <div className='w-full max-w-6xl mx-auto'>
-          {/* Hero Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className='text-center mb-16'>
-            <h2 className='text-4xl md:text-5xl font-bold mb-6'>
-              About FEDCOOP
-            </h2>
-            <p className='text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
-              
-              <strong>
-                FEDCOOP{" "}
-              </strong>
-              is a secondary cooperative body that unites all Staff Cooperative
-              Societies operating within Federal Government Ministries and MDAs.
-              We promote collaboration, accountability, and sustainable
-              development through the cooperative spirit of mutual benefit.
-            </p>
-          </motion.div>
-
-          {/* Features Grid */}
-          <div className='grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20'>
-            {features.map((feature, index) => (
+          {about === undefined || aboutFeatures === undefined ? (
+            <AboutSectionSkeleton />
+          ) : (
+            <div>
+              {/* Hero Section */}
               <motion.div
-                key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}>
-                <Card className='h-full hover:shadow-lg hover:-translate-y-1 transition-all duration-500 ease-in-out bg-background/60 backdrop-blur-sm'>
-                  <CardContent className='p-6 text-center'>
-                    <div className='w-12 h-12 mx-auto mb-4 rounded-lg bg-primary/10 flex items-center justify-center'>
-                      <feature.icon className='w-6 h-6 text-primary' />
-                    </div>
-                    <h3 className='font-semibold mb-2 text-lg'>
-                      {feature.title}
-                    </h3>
-                    <p className='text-sm text-muted-foreground leading-relaxed'>
-                      {feature.description}
-                    </p>
-                  </CardContent>
-                </Card>
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className='text-center mb-16'>
+                <h2 className='text-4xl md:text-5xl font-bold mb-4'>
+                  About FEDCOOP
+                </h2>
+                <p className='text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
+                  {about.tagline && <strong>{about.tagline} </strong>}
+                  {about.description}
+                </p>
               </motion.div>
-            ))}
-          </div>
+
+              {/* Features Grid */}
+              <div className='grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20'>
+                {aboutFeatures.map((feature, index) => (
+                  <motion.div
+                    key={feature._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    viewport={{ once: true }}>
+                    <Card className='h-full hover:shadow-lg hover:-translate-y-1 transition-all duration-500 ease-in-out bg-background/60 backdrop-blur-sm'>
+                      <CardContent className='p-6 text-center'>
+                        <div className='w-12 h-12 mx-auto mb-4 rounded-lg bg-primary/10 flex items-center justify-center'>
+                          {getIconComponent(feature.iconName)}
+                        </div>
+                        <h3 className='font-semibold mb-2 text-lg'>
+                          {feature.title}
+                        </h3>
+                        <p className='text-sm text-muted-foreground leading-relaxed'>
+                          {feature.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Main Content */}
           <div className='grid lg:grid-cols-2 gap-12 items-center mb-24'>
-            {/* Text Content - unchanged */}
+            {/* Text Content */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -134,7 +141,7 @@ const AboutPage = () => {
               )}
             </motion.div>
 
-            {/* Image - Fixed section */}
+            {/* Image */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -144,14 +151,12 @@ const AboutPage = () => {
               <div className='flex justify-center'>
                 <Image
                   src='/role.svg'
-                  alt=''
+                  alt='Our Role Illustration'
                   width={480}
                   height={480}
                   priority
                   className='rounded-lg object-cover'
                 />
-
-            
               </div>
             </motion.div>
           </div>
@@ -231,6 +236,34 @@ const AboutPage = () => {
           </motion.div>
         </div>
       </section>
+    </div>
+  );
+};
+
+// Skeleton loader for the about section
+const AboutSectionSkeleton = () => {
+  return (
+    <div className='space-y-16'>
+      {/* About Header Skeleton */}
+      <div className='text-center mb-16'>
+        <h2 className='text-4xl md:text-5xl font-bold mb-6'>About FEDCOOP</h2>
+        <Skeleton className='h-6 w-3/4 mx-auto mb-2' />
+        <Skeleton className='h-6 w-2/3 mx-auto' />
+      </div>
+
+      {/* About Features Grid Skeleton */}
+      <div className='grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20'>
+        {[1, 2, 3, 4].map((index) => (
+          <Card key={index} className='h-full'>
+            <CardContent className='p-6 text-center'>
+              <Skeleton className='w-12 h-12 mx-auto mb-4 rounded-lg' />
+              <Skeleton className='h-5 w-3/4 mx-auto mb-2' />
+              <Skeleton className='h-4 w-full mb-1' />
+              <Skeleton className='h-4 w-5/6 mx-auto' />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };

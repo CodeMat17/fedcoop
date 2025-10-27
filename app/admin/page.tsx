@@ -25,6 +25,7 @@ import ActivationContent from "./_components/container/ActivationContent";
 import HeroPage from "./_components/container/HeroPage";
 import MissionVision from "./_components/container/MissionVision";
 import OurRoleEditor from "./_components/container/OurRoleEditor";
+import AboutEditor from "./_components/container/AboutEditor";
 
 const AdminPage = () => {
   const news = useQuery(api.news.getAllNews);
@@ -73,6 +74,11 @@ const AdminPage = () => {
               Hero Page
             </TabsTrigger>
             <TabsTrigger
+              value='about'
+              className='whitespace-nowrap px-3 py-2 text-sm'>
+              About Us
+            </TabsTrigger>
+            <TabsTrigger
               value='mission'
               className='whitespace-nowrap px-3 py-2 text-sm'>
               Mission / Vision
@@ -114,6 +120,10 @@ const AdminPage = () => {
 
           <TabsContent value='hero'>
             <HeroPage />
+          </TabsContent>
+
+          <TabsContent value='about'>
+            <AboutEditor />
           </TabsContent>
 
           <TabsContent value='mission'>
@@ -305,8 +315,8 @@ const AdminPage = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="role">
-<OurRoleEditor />
+          <TabsContent value='role'>
+            <OurRoleEditor />
           </TabsContent>
         </Tabs>
       </div>

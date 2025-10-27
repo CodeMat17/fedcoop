@@ -108,4 +108,16 @@ export default defineSchema({
     content: v.string(),
     imageUrl: v.optional(v.string()),
   }),
+
+  about: defineTable({
+    tagline: v.optional(v.string()),
+    description: v.string()
+  }),
+
+  aboutFeatures: defineTable({
+    title: v.string(),
+    description: v.string(),
+    order: v.number(),
+    iconName: v.string(),
+  }).index("by_order", ["order"]),
 });
