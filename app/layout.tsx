@@ -3,10 +3,11 @@ import { Footer } from "@/components/footer";
 import { Navigation } from "@/components/navigation";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
+import type { Viewport, Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,14 +23,15 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.fedcoop.org"),
   title: {
     default:
-      "FedCoop - Federation of Federal Government Staff Cooperative Societies",
-    template: "%s | FedCoop",
+      "FEDCOOP - Federal Civil Service Staff of Nigeria Cooperative Societies",
+    template: "%s | FEDCOOP",
   },
   description:
     "Unifying Workers Cooperatives for a Better World through Cooperation, Collaboration, Advocacy, Peer Review, Training and Investment. A Cooperative Nigeria without Hunger & Poverty.",
-  applicationName: "FedCoop",
+  applicationName: "FEDCOOP",
   keywords: [
     "FedCoop",
+    "FEDCOOP",
     "Federation of Federal Cooperatives",
     "Cooperative Society Nigeria",
     "Federal Government Cooperatives",
@@ -46,8 +48,8 @@ export const metadata: Metadata = {
     "NFVCB Cooperative",
   ],
   authors: [{ name: "FedCoop", url: "https://www.fedcoop.org" }],
-  creator: "FedCoop",
-  publisher: "Federation of Federal Cooperatives",
+  creator: "FEDCOOP",
+  publisher: "FEDCOOP",
   category: "Organization",
   formatDetection: {
     telephone: true,
@@ -71,7 +73,7 @@ export const metadata: Metadata = {
     locale: "en_NG",
     url: "https://www.fedcoop.org",
     title:
-      "FedCoop - Federation of Federal Government Staff Cooperative Societies",
+      "FEDCOOP - Federal Civil Service Staff of Nigeria Cooperative Societies",
     description:
       "Unifying Workers Cooperatives for a Better World through Cooperation, Collaboration, Advocacy, Peer Review, Training and Investment.",
     siteName: "FedCoop",
@@ -80,7 +82,7 @@ export const metadata: Metadata = {
         url: "/opengraph-image.jpg",
         width: 1200,
         height: 630,
-        alt: "FedCoop - Federation of Federal Government Staff Cooperative Societies",
+        alt: "FEDCOOP - Federal Civil Service Staff of Nigeria Cooperative Societies",
         type: "image/jpeg",
       },
     ],
@@ -88,24 +90,41 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "FedCoop - Federation of Federal Government Staff Cooperative Societies",
+      "FEDCOOP - Federal Civil Service Staff of Nigeria Cooperative Societies",
     description:
       "Unifying Workers Cooperatives for a Better World through Cooperation, Collaboration, Advocacy, Peer Review, Training and Investment.",
     images: ["/opengraph-image.jpg"],
-    creator: "@FedCoop",
+    creator: "@FEDCOOP_ng",
   },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+      { url: "/icons/icon-32x32.png", type: "image/png", sizes: "32x32" },
+      { url: "/icons/icon-192x192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icons/icon-512x512.png", type: "image/png", sizes: "512x512" }, // ✅ Fixed: Consistent naming
     ],
-    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+    apple: [
+      { url: "/icons/apple-icon.png", sizes: "180x180", type: "image/png" }, // ✅ Fixed: Removed duplicate
+    ],
   },
-  manifest: "/manifest.webmanifest",
-
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "FEDCOOP",
+  },
   alternates: {
     canonical: "https://www.fedcoop.org",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#f59e0b",
 };
 
 export default function RootLayout({
@@ -128,6 +147,7 @@ export default function RootLayout({
               <main>{children}</main>
               <Footer />
               <Toaster />
+              <PWAInstallPrompt />
             </ConvexClientProvider>
           </ClerkProvider>
         </ThemeProvider>
