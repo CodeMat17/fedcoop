@@ -104,7 +104,7 @@ export const metadata: Metadata = {
       { url: "/icons/icon-512x512.png", type: "image/png", sizes: "512x512" }, // ✅ Fixed: Consistent naming
     ],
     apple: [
-      { url: "/icons/apple-icon.png", sizes: "180x180", type: "image/png" }, // ✅ Fixed: Removed duplicate
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }, // ✅ Fixed: Removed duplicate
     ],
   },
   manifest: "/manifest.json",
@@ -125,6 +125,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: "#f59e0b",
+  colorScheme: "light",
 };
 
 export default function RootLayout({

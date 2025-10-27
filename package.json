@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:pwa": "next build",
+    "serve:pwa": "next start",
+    "test:pwa": "curl -s https://www.fedcoop.org/pwa-health || echo 'PWA health check not available'",
+    "test:manifest": "curl -s https://www.fedcoop.org/manifest.json | jq . || echo 'Manifest not found'"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.33.3",
@@ -49,7 +53,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^24.9.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

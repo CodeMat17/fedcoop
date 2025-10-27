@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,139 +10,284 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Download, X, Clock, Smartphone } from "lucide-react";
+import {
+  Download,
+  X,
+  Clock,
+  Smartphone,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>;
+type InstallationState = "idle" | "installing" | "success" | "error";
+
+interface DeferredPrompt {
+  prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+interface StorageState {
+  pwaPromptDismissed: boolean;
+  pwaPromptDismissedTime: number | null;
+  iosInstructionsDismissed: boolean;
+}
+
+interface StorageUpdates {
+  pwaPromptDismissed?: boolean;
+  pwaPromptDismissedTime?: number | null;
+  iosInstructionsDismissed?: boolean;
+}
+
 export function PWAInstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<DeferredPrompt | null>(
+    null
+  );
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+  const [installationState, setInstallationState] =
+    useState<InstallationState>("idle");
 
-  useEffect(() => {
-    // Check if app is already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
-      setIsStandalone(true);
-      return;
-    }
+  // Check environment and capabilities
+  const checkEnvironment = useCallback(() => {
+    if (typeof window === "undefined") return null;
+
+    // Check if already in standalone mode
+    const isInStandaloneMode = window.matchMedia(
+      "(display-mode: standalone)"
+    ).matches;
+    setIsStandalone(isInStandaloneMode);
 
     // Check for iOS
-    const isIos = () => {
-      return (
-        [
-          "iPad Simulator",
-          "iPhone Simulator",
-          "iPod Simulator",
-          "iPad",
-          "iPhone",
-          "iPod",
-        ].includes(navigator.platform) ||
-        (navigator.userAgent.includes("Mac") && "ontouchend" in document)
-      );
-    };
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isIPad = /macintosh/.test(userAgent) && "ontouchend" in document;
+    const isIOSDevice = /iphone|ipad|ipod/.test(userAgent) || isIPad;
+    setIsIOS(isIOSDevice);
 
-    setIsIOS(isIos());
+    return { isInStandaloneMode, isIOSDevice };
+  }, []);
 
-    // Handle beforeinstallprompt event
-    const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
+  // Get storage state safely
+  const getStorageState = useCallback((): StorageState => {
+    if (typeof window === "undefined") {
+      return {
+        pwaPromptDismissed: false,
+        pwaPromptDismissedTime: null,
+        iosInstructionsDismissed: false,
+      };
+    }
 
-      // Show prompt after a delay
-      const hasSeenPrompt = localStorage.getItem("pwa-prompt-dismissed");
-      const promptDismissTime = localStorage.getItem(
+    try {
+      const pwaPromptDismissed =
+        localStorage.getItem("pwa-prompt-dismissed") === "true";
+
+      const pwaPromptDismissedTimeStr = localStorage.getItem(
         "pwa-prompt-dismissed-time"
       );
+      const pwaPromptDismissedTime = pwaPromptDismissedTimeStr
+        ? parseInt(pwaPromptDismissedTimeStr, 10)
+        : null;
 
-      if (!hasSeenPrompt) {
-        setTimeout(() => setShowPrompt(true), 5000);
-      } else if (promptDismissTime) {
-        // Show again after 7 days if they chose "Remind Later"
-        const dismissTime = parseInt(promptDismissTime);
-        const sevenDays = 7 * 24 * 60 * 60 * 1000;
-        if (Date.now() - dismissTime > sevenDays) {
-          setTimeout(() => setShowPrompt(true), 2000);
+      const iosInstructionsDismissed =
+        localStorage.getItem("ios-instructions-dismissed") === "true";
+
+      return {
+        pwaPromptDismissed,
+        pwaPromptDismissedTime,
+        iosInstructionsDismissed,
+      };
+    } catch {
+      return {
+        pwaPromptDismissed: false,
+        pwaPromptDismissedTime: null,
+        iosInstructionsDismissed: false,
+      };
+    }
+  }, []);
+
+  // Set storage state safely with proper null handling
+  const setStorageState = useCallback((updates: StorageUpdates) => {
+    if (typeof window === "undefined") return;
+
+    try {
+      if (updates.pwaPromptDismissed !== undefined) {
+        localStorage.setItem(
+          "pwa-prompt-dismissed",
+          updates.pwaPromptDismissed.toString()
+        );
+      }
+
+      if (updates.pwaPromptDismissedTime !== undefined) {
+        // Handle null case properly
+        if (updates.pwaPromptDismissedTime === null) {
+          localStorage.removeItem("pwa-prompt-dismissed-time");
+        } else {
+          localStorage.setItem(
+            "pwa-prompt-dismissed-time",
+            updates.pwaPromptDismissedTime.toString()
+          );
         }
+      }
+
+      if (updates.iosInstructionsDismissed !== undefined) {
+        localStorage.setItem(
+          "ios-instructions-dismissed",
+          updates.iosInstructionsDismissed.toString()
+        );
+      }
+    } catch (error) {
+      console.warn("Failed to access localStorage:", error);
+    }
+  }, []);
+
+  // Handle installation events
+  useEffect(() => {
+    const environment = checkEnvironment();
+    if (!environment || environment.isInStandaloneMode) return;
+
+    const storageState = getStorageState();
+
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+
+      const deferredPromptEvent = event as unknown as DeferredPrompt;
+      setDeferredPrompt(deferredPromptEvent);
+
+      // Show prompt based on storage state with proper null checking
+      const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      const currentTime = Date.now();
+
+      let shouldShowPrompt = false;
+
+      if (!storageState.pwaPromptDismissed) {
+        // Never shown before
+        shouldShowPrompt = true;
+      } else if (
+        storageState.pwaPromptDismissedTime !== null &&
+        currentTime - storageState.pwaPromptDismissedTime > sevenDaysMs
+      ) {
+        // Shown before but more than 7 days ago
+        shouldShowPrompt = true;
+      }
+
+      if (shouldShowPrompt) {
+        const timeoutId = setTimeout(() => setShowPrompt(true), 3000);
+        return () => clearTimeout(timeoutId);
       }
     };
 
-    // Handle app installed event
     const handleAppInstalled = () => {
       setDeferredPrompt(null);
       setShowPrompt(false);
-      setShowIOSInstructions(false);
-      localStorage.setItem("pwa-prompt-dismissed", "true");
+      setInstallationState("success");
+      setStorageState({ pwaPromptDismissed: true });
+
+      const timeoutId = setTimeout(() => setInstallationState("idle"), 3000);
+      return () => clearTimeout(timeoutId);
     };
 
-    window.addEventListener(
-      "beforeinstallprompt",
-      handleBeforeInstallPrompt as EventListener
-    );
+    // Add event listeners
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleAppInstalled);
 
-    // For iOS, show instructions after a delay if not dismissed
-    if (isIos()) {
-      const hasDismissedIOS = localStorage.getItem(
-        "ios-instructions-dismissed"
-      );
-      if (!hasDismissedIOS) {
-        setTimeout(() => setShowIOSInstructions(true), 8000);
-      }
+    // Show iOS instructions if applicable
+    if (environment.isIOSDevice && !storageState.iosInstructionsDismissed) {
+      const timeoutId = setTimeout(() => setShowIOSInstructions(true), 5000);
+      return () => clearTimeout(timeoutId);
     }
 
     return () => {
       window.removeEventListener(
         "beforeinstallprompt",
-        handleBeforeInstallPrompt as EventListener
+        handleBeforeInstallPrompt
       );
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, []);
+  }, [checkEnvironment, getStorageState, setStorageState]);
 
-  const handleInstall = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
+  const handleInstall = async (): Promise<void> => {
+    if (!deferredPrompt) {
+      setInstallationState("error");
+      return;
+    }
+
+    try {
+      setInstallationState("installing");
+      await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
 
       if (outcome === "accepted") {
-        console.log("PWA installed successfully");
+        setInstallationState("success");
+      } else {
+        setInstallationState("idle");
       }
+    } catch {
+      setInstallationState("error");
     }
+
+    setDeferredPrompt(null);
     setShowPrompt(false);
-    localStorage.setItem("pwa-prompt-dismissed", "true");
-    localStorage.setItem("pwa-prompt-dismissed-time", Date.now().toString());
+    setStorageState({
+      pwaPromptDismissed: true,
+      pwaPromptDismissedTime: Date.now(),
+    });
   };
 
-  const handleRemindLater = () => {
+  const handleRemindLater = (): void => {
     setShowPrompt(false);
-    localStorage.setItem("pwa-prompt-dismissed-time", Date.now().toString());
+    setStorageState({ pwaPromptDismissedTime: Date.now() });
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setShowPrompt(false);
-    localStorage.setItem("pwa-prompt-dismissed", "true");
-    localStorage.setItem("pwa-prompt-dismissed-time", Date.now().toString());
+    setStorageState({
+      pwaPromptDismissed: true,
+      pwaPromptDismissedTime: Date.now(),
+    });
   };
 
-  const handleDismissIOS = () => {
+  const handleDismissIOS = (): void => {
     setShowIOSInstructions(false);
-    localStorage.setItem("ios-instructions-dismissed", "true");
+    setStorageState({ iosInstructionsDismissed: true });
   };
 
-  // Don't show if already in standalone mode
   if (isStandalone) {
     return null;
   }
 
   return (
     <>
-      {/* Main Install Prompt for Android/Desktop */}
+      {/* Installation Status */}
+      {installationState === "success" && (
+        <div className='fixed bottom-4 left-4 right-4 bg-green-500 text-white p-4 rounded-xl shadow-2xl z-50 animate-in slide-in-from-bottom-4'>
+          <div className='flex items-center gap-3'>
+            <CheckCircle className='w-6 h-6 flex-shrink-0' />
+            <div className='flex-1'>
+              <h3 className='font-bold text-sm'>FEDCOOP Installed!</h3>
+              <p className='text-xs opacity-90'>
+                App added to your home screen.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {installationState === "error" && (
+        <div className='fixed bottom-4 left-4 right-4 bg-red-500 text-white p-4 rounded-xl shadow-2xl z-50 animate-in slide-in-from-bottom-4'>
+          <div className='flex items-center gap-3'>
+            <AlertCircle className='w-6 h-6 flex-shrink-0' />
+            <div className='flex-1'>
+              <h3 className='font-bold text-sm'>Installation Failed</h3>
+              <p className='text-xs opacity-90'>
+                Try again or use browser menu.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Install Prompt */}
       <Dialog open={showPrompt} onOpenChange={setShowPrompt}>
         <DialogContent className='sm:max-w-md'>
           <DialogHeader>
@@ -152,7 +297,7 @@ export function PWAInstallPrompt() {
             <DialogTitle className='text-center text-xl'>
               Install FEDCOOP App
             </DialogTitle>
-            <DialogDescription className='text-center text-base'>
+            <DialogDescription className='text-center'>
               Get the full app experience with quick access and better
               performance.
             </DialogDescription>
@@ -166,39 +311,44 @@ export function PWAInstallPrompt() {
           </div>
 
           <DialogFooter className='flex flex-col sm:flex-row gap-3'>
-            <Button
-              variant='outline'
-              onClick={handleCancel}
-              className='order-3 sm:order-3'>
+            <Button variant='outline' onClick={handleCancel}>
               <X className='w-4 h-4 mr-2' />
               Cancel
             </Button>
-            <Button
-              variant='outline'
-              onClick={handleRemindLater}
-              className='order-2 sm:order-2'>
+            <Button variant='outline' onClick={handleRemindLater}>
               <Clock className='w-4 h-4 mr-2' />
-              Remind Later
+              Later
             </Button>
             {!isIOS && deferredPrompt && (
-              <Button onClick={handleInstall} className='order-1 sm:order-1'>
-                <Download className='w-4 h-4 mr-2' />
-                Install App
+              <Button
+                onClick={handleInstall}
+                disabled={installationState === "installing"}>
+                {installationState === "installing" ? (
+                  <>
+                    <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2' />
+                    Installing...
+                  </>
+                ) : (
+                  <>
+                    <Download className='w-4 h-4 mr-2' />
+                    Install
+                  </>
+                )}
               </Button>
             )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* iOS Installation Instructions Banner */}
+      {/* iOS Instructions */}
       {isIOS && showIOSInstructions && (
-        <div className='fixed bottom-4 left-4 right-4 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground p-4 rounded-xl shadow-2xl z-50 animate-in slide-in-from-bottom-4 duration-500 border border-primary/20'>
+        <div className='fixed bottom-4 left-4 right-4 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground p-4 rounded-xl shadow-2xl z-50 border border-primary/20'>
           <div className='flex items-start gap-3'>
             <div className='flex-shrink-0 w-10 h-10 bg-primary-foreground/20 rounded-full flex items-center justify-center'>
-              <Download className='w-5 h-5 text-primary-foreground' />
+              <Download className='w-5 h-5' />
             </div>
             <div className='flex-1'>
-              <h3 className='font-bold text-sm'>Add FEDCOOP to Home Screen</h3>
+              <h3 className='font-bold text-sm'>Add to Home Screen</h3>
               <p className='text-xs opacity-90 mt-1'>
                 Tap{" "}
                 <span className='font-bold bg-primary-foreground/20 px-1 rounded'>
@@ -214,7 +364,7 @@ export function PWAInstallPrompt() {
               variant='ghost'
               size='sm'
               onClick={handleDismissIOS}
-              className='text-primary-foreground hover:bg-primary-foreground/20 flex-shrink-0 -mt-1 -mr-2'>
+              className='flex-shrink-0 -mt-1 -mr-2'>
               <X className='w-4 h-4' />
             </Button>
           </div>
