@@ -1,11 +1,21 @@
 {
-  "name": "FEDCOOP - Federal Civil Service Staff of Nigeria Cooperative Societies",
+  "name": "FEDCOOP",
   "short_name": "FEDCOOP",
+  "description": "FEDCOOP App",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#f59e0b",
-  "orientation": "portrait-primary",
+  "categories": [
+    "productivity",
+    "finance",
+    "education",
+    "business",
+    "organization",
+    "Cooperative"
+  ],
   "icons": [
     {
       "src": "/icons/icon-32x32.png",
@@ -28,5 +38,49 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "FEDCOOP Mobile"
+    },
+    {
+      "src": "/screenshots/desktop.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "FEDCOOP Desktop"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "About FEDCOOP",
+      "short_name": "About",
+      "url": "/about-fedcoop",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "News & Updates",
+      "short_name": "News",
+      "url": "/news",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Our Directors",
+      "short_name": "Directors",
+      "url": "/directors",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Contact Us",
+      "short_name": "Contacts",
+      "url": "/contacts",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

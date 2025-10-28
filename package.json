@@ -1,16 +1,12 @@
 {
   "name": "fedcoop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint",
-    "build:pwa": "next build",
-    "serve:pwa": "next start",
-    "test:pwa": "curl -s https://www.fedcoop.org/pwa-health || echo 'PWA health check not available'",
-    "test:manifest": "curl -s https://www.fedcoop.org/manifest.json | jq . || echo 'Manifest not found'"
+    "lint": "eslint"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.33.3",
