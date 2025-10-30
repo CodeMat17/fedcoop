@@ -26,6 +26,7 @@ import type * as ourRole from "../ourRole.js";
 import type * as registration from "../registration.js";
 import type * as testimonials from "../testimonials.js";
 import type * as users from "../users.js";
+import type * as videoEvents from "../videoEvents.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   registration: typeof registration;
   testimonials: typeof testimonials;
   users: typeof users;
+  videoEvents: typeof videoEvents;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

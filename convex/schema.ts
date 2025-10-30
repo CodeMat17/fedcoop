@@ -111,7 +111,7 @@ export default defineSchema({
 
   about: defineTable({
     tagline: v.optional(v.string()),
-    description: v.string()
+    description: v.string(),
   }),
 
   aboutFeatures: defineTable({
@@ -120,4 +120,11 @@ export default defineSchema({
     order: v.number(),
     iconName: v.string(),
   }).index("by_order", ["order"]),
+
+  videoEvents: defineTable({
+    description: v.string(),
+    videoUrl: v.string(), // YouTube URL
+    captionUrl: v.optional(v.string()),
+    date: v.string(), // ISO string (use dayjs().toISOString())
+  }).index("by_date", ["date"]),
 });

@@ -26,6 +26,7 @@ import HeroPage from "./_components/container/HeroPage";
 import MissionVision from "./_components/container/MissionVision";
 import OurRoleEditor from "./_components/container/OurRoleEditor";
 import AboutEditor from "./_components/container/AboutEditor";
+import AdminVideosComponent from "./_components/video-events/AdminVideosComponent";
 
 const AdminPage = () => {
   const news = useQuery(api.news.getAllNews);
@@ -96,7 +97,12 @@ const AdminPage = () => {
             <TabsTrigger
               value='events'
               className='whitespace-nowrap px-3 py-2 text-sm'>
-              Events
+              Photo Gallery
+            </TabsTrigger>
+            <TabsTrigger
+              value='videos'
+              className='whitespace-nowrap px-3 py-2 text-sm'>
+              Videos
             </TabsTrigger>
             <TabsTrigger
               value='testimonials'
@@ -254,6 +260,10 @@ const AdminPage = () => {
 
           <TabsContent value='events'>
             <EventsGalleryContent />
+          </TabsContent>
+
+          <TabsContent value='videos'>
+            <AdminVideosComponent />
           </TabsContent>
 
           <TabsContent value='testimonials'>

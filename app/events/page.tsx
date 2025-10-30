@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-// import { GalleryGrid } from "@/components/ui/gallery-grid";
-// or
+
 import { MobileFriendlyGallery } from "@/components/ui/mobile-friendly-gallery";
+import { VideoGrid } from "@/components/video-grid";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Loader2 } from "lucide-react";
@@ -46,8 +46,12 @@ const EventsPage = () => {
           </div>
         ) : (
           // <GalleryGrid gallery={gallery} />
-           <MobileFriendlyGallery gallery={gallery} />
+          <MobileFriendlyGallery gallery={gallery} />
         )}
+      </div>
+
+      <div>
+        <VideoGrid />
       </div>
     </section>
   );

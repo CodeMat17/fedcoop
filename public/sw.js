@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-const CACHE_NAME = "fedcoop-static-v1";
+const CACHE_NAME = "fedcoop-static-v2";
 const STATIC_ASSETS = [
   "/",
   "/favicon.ico",
