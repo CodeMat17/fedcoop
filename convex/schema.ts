@@ -53,7 +53,7 @@ export default defineSchema({
     image: v.optional(v.string()),
     name: v.string(),
     position: v.string(),
-    description: v.string(),
+    description: v.optional(v.string()),
   }),
 
   registration: defineTable({

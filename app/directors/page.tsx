@@ -91,9 +91,6 @@ const DirectorsPage = () => {
                       <p className='text-muted-foreground text-lg'>
                         {executive.position}
                       </p>
-                      <p className='text-muted-foreground text-sm'>
-                        {executive.description}
-                      </p>
                     </div>
                   </div>
 

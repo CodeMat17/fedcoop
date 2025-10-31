@@ -242,9 +242,7 @@ const AdminPage = () => {
                           <p className='text-sm text-muted-foreground'>
                             {exco.position}
                           </p>
-                          <p className='text-sm text-muted-foreground line-clamp-3'>
-                            {exco.description}
-                          </p>
+                        
                         </div>
                         <div className='flex justify-between gap-2 w-full pt-2'>
                           <UpdateExcoModal exco={exco} />

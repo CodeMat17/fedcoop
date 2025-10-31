@@ -24,7 +24,6 @@ const AddExcoModal = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [position, setPosition] = useState("");
-  const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -132,7 +131,6 @@ const AddExcoModal = () => {
 
     const sanitizedName = sanitizeInput(name);
     const sanitizedPosition = sanitizeInput(position);
-    const sanitizedDescription = sanitizeInput(description);
 
     if (!sanitizedName.trim()) return toast.error("Please enter a name");
     if (sanitizedName.length > 100)
@@ -142,9 +140,6 @@ const AddExcoModal = () => {
       return toast.error("Please enter a position");
     if (sanitizedPosition.length > 100)
       return toast.error("Position too long (max 100 chars)");
-
-    if (!sanitizedDescription.trim())
-      return toast.error("Please enter an organization/post");
 
     setIsSubmitting(true);
 
@@ -168,13 +163,13 @@ const AddExcoModal = () => {
         image: storageId || undefined,
         name: sanitizedName,
         position: sanitizedPosition,
-        description: sanitizedDescription,
+        // description: sanitizedDescription,
       });
 
       toast.success("Executive added successfully!");
       setName("");
       setPosition("");
-      setDescription("");
+      // setDescription("");
       setImageFile(null);
       setImagePreview(null);
       setOpen(false);
@@ -191,12 +186,12 @@ const AddExcoModal = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add Executive</Button>
+        <Button>Add Director</Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[500px] max-h-[90vh] overflow-y-auto'>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add Executive</DialogTitle>
+            <DialogTitle>Add Director</DialogTitle>
             <DialogDescription>
               Name, position, and organization are required. Image is optional.
             </DialogDescription>
@@ -279,20 +274,7 @@ const AddExcoModal = () => {
               </span>
             </div>
 
-            {/* Description */}
-            <div className='grid gap-3'>
-              <Label htmlFor='description'>Cooperative/Post *</Label>
-              <Input
-                id='description'
-                placeholder='e.g., PRO, EFCC Cooperative'
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                maxLength={150}
-              />
-              <span className='text-xs text-muted-foreground'>
-                {description.length}/150 characters
-              </span>
-            </div>
+          
           </div>
 
           <DialogFooter>
@@ -305,10 +287,10 @@ const AddExcoModal = () => {
               {isSubmitting ? (
                 <>
                   <Loader2 className='w-4 h-4 mr-2 animate-spin' />
-                  Adding...
+                  Submitting...
                 </>
               ) : (
-                "Add Executive"
+                "Submit"
               )}
             </Button>
           </DialogFooter>

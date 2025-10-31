@@ -47,14 +47,14 @@ export const addExcos = mutation({
     image: v.optional(v.string()),
     name: v.string(),
     position: v.string(),
-    description: v.string(),
+    // description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     // validateStorageId(args.image || '');
 
     const name = sanitizeString(args.name);
     const position = sanitizeString(args.position);
-    const description = sanitizeString(args.description);
+    // const description = sanitizeString(args.description);
 
     if (!name) throw new Error("Name is required");
     if (!position) throw new Error("Position is required");
@@ -66,7 +66,7 @@ export const addExcos = mutation({
       image: args.image ?? undefined,
       name,
       position,
-      description,
+      // description,
     });
   },
 });
