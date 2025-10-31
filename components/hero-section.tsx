@@ -55,7 +55,7 @@ export function HeroSection() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                   className='text-4xl md:text-5xl xl:text-[53px] font-bold tracking-tight'>
-                  Federal Civil Service Staff of Nigeria Cooperative Societies -
+                  Federal Civil Service Staff of Nigeria Cooperative Societies Ltd -
                   (FEDCOOP)
                 </motion.h1>
 
