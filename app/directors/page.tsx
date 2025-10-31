@@ -28,7 +28,7 @@ const DirectorsPage = () => {
           <h1 className='text-5xl md:text-6xl font-bold text-foreground mb-6'>
             FEDCOOP Board of Directors
           </h1>
-          <p className='text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
+          <p className='text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
             Meet the dedicated leaders serving FEDCOOP&apos;s members and
             community with passion and expertise
           </p>
