@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+// import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -50,19 +50,24 @@ export function HeroSection() {
             {hero === undefined ? (
               // Skeleton Loading State
               <div className='space-y-4 xl:mt-16'>
-                {/* Title Skeleton - Multi-line to match your long title */}
-                <div className='space-y-3'>
-                  <Skeleton className='h-10 md:h-12 xl:h-14 w-full max-w-4xl rounded' />
-                  <Skeleton className='h-10 md:h-12 xl:h-14 w-full max-w-3xl rounded' />
-                  <Skeleton className='h-10 md:h-12 xl:h-14 w-full max-w-2xl rounded' />
-                </div>
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className='text-4xl md:text-5xl xl:text-[53px] font-bold tracking-tight'>
+                  Federal Civil Service Staff of Nigeria Cooperative Societies -
+                  (FEDCOOP)
+                </motion.h1>
 
-                {/* Subtitle Skeleton */}
-                <div className='space-y-2 pt-2'>
-                  <Skeleton className='h-6 w-full max-w-2xl rounded' />
-                  <Skeleton className='h-6 w-full max-w-xl rounded' />
-                  <Skeleton className='h-6 w-full max-w-lg rounded' />
-                </div>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                  className='text-xl text-muted-foreground max-w-2xl'>
+                  Unifying Workers Cooperatives for a Better World through
+                  Cooperation, Collaboration, Advocacy, Peer Review, Training
+                  and Investment.
+                </motion.p>
               </div>
             ) : (
               // Hero Content from Convex
