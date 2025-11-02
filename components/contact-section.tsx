@@ -126,7 +126,7 @@ export function ContactSection() {
   return (
     <section
       id='contact'
-      className='py-24 bg-gradient-to-br from-background via-muted/20 to-background'>
+      className='bg-gradient-to-br from-background via-muted/20 to-background'>
       <div className='px-4 w-full max-w-6xl mx-auto'>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
