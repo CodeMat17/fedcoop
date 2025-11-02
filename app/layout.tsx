@@ -7,8 +7,7 @@ import type { Viewport, Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
-import { PWARegister } from "@/components/PWARegister";
+import { ClearOldServiceWorker } from "@/components/ClearOldServiceWorker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -83,8 +82,8 @@ export default function RootLayout({
               <main>{children}</main>
               <Footer />
               <Toaster />
-              <PWARegister />
-              <PWAInstallPrompt />
+              <ClearOldServiceWorker />
+              {/* <PWAInstallPrompt /> */}
             </ConvexClientProvider>
           </ClerkProvider>
         </ThemeProvider>
