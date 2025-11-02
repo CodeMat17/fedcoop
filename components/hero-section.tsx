@@ -6,11 +6,11 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { MembersMarquee } from "./members-marquee";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+// import { useQuery } from "convex/react";
+// import { api } from "@/convex/_generated/api";
 
 export function HeroSection() {
-  const hero = useQuery(api.hero.getHero);
+  // const hero = useQuery(api.hero.getHero);
 
   return (
     <section className='relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-primary/10 pt-20 xl:py-0'>
@@ -47,15 +47,15 @@ export function HeroSection() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             className='space-y-8'>
-            {hero === undefined ? (
-              // Skeleton Loading State
+          
+              {/* // Skeleton Loading State */}
               <div className='space-y-4 xl:mt-16'>
                 <motion.h1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                   className='text-4xl md:text-5xl xl:text-[53px] font-bold tracking-tight'>
-                  Federal Civil Service Staff of Nigeria Cooperative Societies Ltd -
+                  Federal Civil Service Staff of Nigeria Cooperative Societies Ltd
                   (FEDCOOP)
                 </motion.h1>
 
@@ -69,26 +69,7 @@ export function HeroSection() {
                   and Investment.
                 </motion.p>
               </div>
-            ) : (
-              // Hero Content from Convex
-              <div className='space-y-4 xl:mt-16'>
-                <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
-                  className='text-4xl md:text-5xl xl:text-[53px] font-bold tracking-tight'>
-                  {hero.title}
-                </motion.h1>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.6 }}
-                  className='text-xl text-muted-foreground max-w-2xl'>
-                  {hero.subtitle}
-                </motion.p>
-              </div>
-            )}
+        
 
             {/* CTA Buttons */}
             <motion.div
