@@ -2,18 +2,18 @@ import { ContactSection } from "@/components/contact-section";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact Us - FedCoop | Get in Touch",
+  title: "Contact Us - FEDCOOP | Get in Touch",
   description:
-    "Contact FedCoop - Federation of Federal Government Staff Cooperative Societies. Reach out to us for inquiries, support, or to learn more about joining our cooperative network.",
+    "Contact FEDCOOP - Federal Civil Service Staff of Nigeria Cooperative Societies. Reach out to us for inquiries, support, or to learn more about joining our cooperative network.",
   openGraph: {
-    title: "Contact FedCoop - Get in Touch",
+    title: "Contact FEDCOOP - Get in Touch",
     description:
-      "Reach out to FedCoop for inquiries, support, or to learn more about joining our cooperative network. We're here to help.",
+      "Reach out to FEDCOOP for inquiries, support, or to learn more about joining our cooperative network. We're here to help.",
   },
   twitter: {
-    title: "Contact FedCoop - Get in Touch",
+    title: "Contact FEDCOOP - Get in Touch",
     description:
-      "Reach out to FedCoop for inquiries, support, or to learn more about joining our cooperative network. We're here to help.",
+      "Reach out to FEDCOOP for inquiries, support, or to learn more about joining our cooperative network. We're here to help.",
   },
 };
 
