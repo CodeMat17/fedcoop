@@ -36,12 +36,14 @@ export function TestimonialSection() {
               <Card key={testimonial._id} className='h-full'>
                 <CardContent className='p-6 h-full flex flex-col'>
                   <div className='flex items-center mb-4'>
-                    <div>
-                      <h4 className='font-semibold'>{testimonial.name}</h4>
-                      <p className='text-xs text-muted-foreground'>
+                  
+                      <h4 className='font-semibold leading-tight'>
+                        {testimonial.name}
+                      </h4>
+                      {/* <p className='font-medium text-muted-foreground'>
                         Staff Multipurpose Cooperative Society
-                      </p>
-                    </div>
+                      </p> */}
+                  
                   </div>
 
                   <div className='flex items-center mb-3'>
