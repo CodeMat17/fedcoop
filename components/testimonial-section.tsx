@@ -15,7 +15,7 @@ export function TestimonialSection() {
           <h2 className='text-3xl font-bold tracking-tight mb-4'>
             What Our Member Cooperatives Say
           </h2>
-          <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
+          <p className='text-muted-foreground max-w-2xl mx-auto'>
             Hear from our member cooperative societies about their partnership
             with FEDCOOP and how we&apos;ve supported their growth and
             development.
