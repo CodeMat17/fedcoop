@@ -6,9 +6,9 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title:
-    "FEDCOOP - Federation of Federal Government Staff Cooperative Societies | Home",
+    "FEDCOOP - Federal Civil Service Staff of Nigeria Cooperative Societies | Home",
   description:
-    "Official website of FedCoop - The umbrella organization for all federal cooperative societies in Nigeria. Unifying workers cooperatives through cooperation, collaboration, advocacy, peer review, training and investment for a Nigeria without hunger and poverty.",
+    "Official website of FEDCOOP - The umbrella organization for all federal cooperative societies in Nigeria. Unifying workers cooperatives through cooperation, collaboration, advocacy, peer review, training and investment for a Nigeria without hunger and poverty.",
   openGraph: {
     title: "FEDCOOP - Unifying Federal Cooperatives in Nigeria",
     description:
