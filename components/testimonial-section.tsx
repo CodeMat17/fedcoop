@@ -37,7 +37,7 @@ export function TestimonialSection() {
                 <CardContent className='p-6 h-full flex flex-col'>
                   <div className='flex items-center mb-4'>
                   
-                      <h4 className='font-semibold leading-tight'>
+                      <h4 className='font-semibold leading-tight text-lg'>
                         {testimonial.name}
                       </h4>
                       {/* <p className='font-medium text-muted-foreground'>
@@ -55,7 +55,7 @@ export function TestimonialSection() {
                     ))}
                   </div>
 
-                  <blockquote className='text-sm text-muted-foreground flex-grow italic'>
+                  <blockquote className='text-muted-foreground flex-grow italic'>
                     &quot;{testimonial.body}&quot;
                   </blockquote>
                 </CardContent>
