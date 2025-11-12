@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { ImagePlus, Loader2, X } from "lucide-react";
@@ -24,6 +25,7 @@ const AddExcoModal = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [position, setPosition] = useState("");
+  const [profile, setProfile] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -131,6 +133,7 @@ const AddExcoModal = () => {
 
     const sanitizedName = sanitizeInput(name);
     const sanitizedPosition = sanitizeInput(position);
+    const sanitizedProfile = sanitizeInput(profile);
 
     if (!sanitizedName.trim()) return toast.error("Please enter a name");
     if (sanitizedName.length > 100)
@@ -140,6 +143,10 @@ const AddExcoModal = () => {
       return toast.error("Please enter a position");
     if (sanitizedPosition.length > 100)
       return toast.error("Position too long (max 100 chars)");
+
+    if (!sanitizedProfile.trim()) return toast.error("Please enter profile");
+    if (sanitizedProfile.length > 600)
+      return toast.error("Profile too long (max 600 chars)");
 
     setIsSubmitting(true);
 
@@ -163,13 +170,13 @@ const AddExcoModal = () => {
         image: storageId || undefined,
         name: sanitizedName,
         position: sanitizedPosition,
-        // description: sanitizedDescription,
+        profile: sanitizedProfile,
       });
 
       toast.success("Executive added successfully!");
       setName("");
       setPosition("");
-      // setDescription("");
+      setProfile("");
       setImageFile(null);
       setImagePreview(null);
       setOpen(false);
@@ -193,7 +200,7 @@ const AddExcoModal = () => {
           <DialogHeader>
             <DialogTitle>Add Director</DialogTitle>
             <DialogDescription>
-              Name, position, and organization are required. Image is optional.
+              Name, position, and profile are required. Image is optional.
             </DialogDescription>
           </DialogHeader>
 
@@ -273,9 +280,23 @@ const AddExcoModal = () => {
                 {position.length}/100 characters
               </span>
             </div>
-
-          
           </div>
+
+            {/* Profile */}
+            <div className='grid gap-3'>
+              <Label htmlFor='profile'>Profile *</Label>
+              <Textarea
+                id='profile'
+                placeholder='Enter profile'
+                value={profile}
+                onChange={(e) => setProfile(e.target.value)}
+                maxLength={600}
+              />
+              <span className='text-xs text-muted-foreground'>
+                {position.length}/100 characters
+              </span>
+            </div>
+        
 
           <DialogFooter>
             <DialogClose asChild>

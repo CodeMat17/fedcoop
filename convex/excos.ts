@@ -47,26 +47,28 @@ export const addExcos = mutation({
     image: v.optional(v.string()),
     name: v.string(),
     position: v.string(),
-    // description: v.optional(v.string()),
+    profile: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     // validateStorageId(args.image || '');
 
     const name = sanitizeString(args.name);
     const position = sanitizeString(args.position);
-    // const description = sanitizeString(args.description);
+    const profile = sanitizeString(args.profile);
 
     if (!name) throw new Error("Name is required");
     if (!position) throw new Error("Position is required");
     if (name.length > 100) throw new Error("Name too long (max 100 chars)");
     if (position.length > 100)
       throw new Error("Position too long (max 100 chars)");
+     if (profile.length > 600)
+       throw new Error("Profile too long (max 600 chars)");
 
     return await ctx.db.insert("excos", {
       image: args.image ?? undefined,
       name,
       position,
-      // description,
+      profile,
     });
   },
 });
@@ -78,7 +80,7 @@ export const updateExcos = mutation({
     image: v.optional(v.string()),
     name: v.optional(v.string()),
     position: v.optional(v.string()),
-    description: v.optional(v.string()),
+    profile: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.get(args.id);
@@ -88,7 +90,7 @@ export const updateExcos = mutation({
       image: string;
       name: string;
       position: string;
-      description: string;
+      profile: string;
     }> = {};
 
     if (args.image && args.image !== existing.image) {
@@ -121,8 +123,11 @@ export const updateExcos = mutation({
       updateData.position = position;
     }
 
-    if (args.description !== undefined) {
-      updateData.description = sanitizeString(args.description);
+    if (args.profile !== undefined) {
+         const profile = sanitizeString(args.profile);
+         if (!profile) throw new Error("Profile cannot be empty");
+         if (profile.length > 600) throw new Error("Profile too long");
+      updateData.profile = profile;
     }
 
     if (Object.keys(updateData).length > 0) {

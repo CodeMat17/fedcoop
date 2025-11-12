@@ -29,7 +29,7 @@ function validateRating(rating: number): void {
 export const getAllTestimonials = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("testimonials").order("desc").collect();
+    return await ctx.db.query("testimonials").order("asc").collect();
   },
 });
 

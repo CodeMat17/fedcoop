@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useMutation } from "convex/react";
@@ -27,6 +28,7 @@ interface ExcoItem {
   position: string;
   image?: string;
   imageUrl: string | null;
+  profile?: string;
 }
 
 interface UpdateExcoModalProps {
@@ -37,6 +39,7 @@ const UpdateExcoModal = ({ exco }: UpdateExcoModalProps) => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(exco.name);
   const [position, setPosition] = useState(exco.position);
+    const [profile, setProfile] = useState(exco.profile ?? '');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
     exco.imageUrl
@@ -51,6 +54,7 @@ const UpdateExcoModal = ({ exco }: UpdateExcoModalProps) => {
     if (open) {
       setName(exco.name);
       setPosition(exco.position);
+      setProfile(exco.profile ?? '');
       setImageFile(null);
       setImagePreview(exco.imageUrl);
     }
@@ -190,6 +194,7 @@ const UpdateExcoModal = ({ exco }: UpdateExcoModalProps) => {
     // Frontend validation and sanitization
     const sanitizedName = sanitizeInput(name);
     const sanitizedPosition = sanitizeInput(position);
+    const sanitizedProfile = sanitizeInput(profile);
 
     if (!sanitizedName.trim()) {
       toast.error("Please enter a name");
@@ -210,6 +215,16 @@ const UpdateExcoModal = ({ exco }: UpdateExcoModalProps) => {
       toast.error("Position is too long (max 100 characters)");
       return;
     }
+
+      if (!sanitizedProfile.trim()) {
+        toast.error("Please enter profile");
+        return;
+      }
+
+      if (sanitizedProfile.length > 600) {
+        toast.error("Profile is too long (max 600 characters)");
+        return;
+      }
 
     setIsSubmitting(true);
 
@@ -242,6 +257,7 @@ const UpdateExcoModal = ({ exco }: UpdateExcoModalProps) => {
         image: imageFile ? storageId : undefined,
         name: sanitizedName,
         position: sanitizedPosition,
+        profile: sanitizedProfile,
       });
 
       toast.success("Executive updated successfully!");
@@ -348,7 +364,20 @@ const UpdateExcoModal = ({ exco }: UpdateExcoModalProps) => {
               </span>
             </div>
 
-         
+            {/* Profile */}
+            <div className='grid gap-3'>
+              <Label htmlFor='profile'>Profile *</Label>
+              <Textarea
+                id='profile'
+                placeholder=''
+                value={profile}
+                onChange={(e) => setProfile(e.target.value)}
+                maxLength={600}
+              />
+              <span className='text-xs text-muted-foreground'>
+                {profile?.length}/600 characters
+              </span>
+            </div>
           </div>
 
           <DialogFooter>

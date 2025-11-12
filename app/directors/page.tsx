@@ -1,5 +1,6 @@
 "use client";
 
+import Profile from "@/components/profile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { api } from "@/convex/_generated/api";
@@ -88,9 +89,10 @@ const DirectorsPage = () => {
                       <h3 className='text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300'>
                         {executive.name}
                       </h3>
-                      <p className='text-muted-foreground text-lg'>
+                      <p className='text-muted-foreground text-lg mb-2'>
                         {executive.position}
                       </p>
+                      <Profile image={executive.imageUrl} name={executive.name} profile={executive?.profile} />
                     </div>
                   </div>
 
@@ -110,7 +112,7 @@ const DirectorsPage = () => {
                   <h2 className='text-3xl font-bold text-foreground mb-6'>
                     Leadership Structure
                   </h2>
-                  <p className='text-muted-foreground leading-relaxed text-lg max-w-4xl mx-auto'>
+                  <p className='text-muted-foreground leading-relaxed max-w-4xl mx-auto'>
                     Our Directors consists of dedicated members elected by the
                     cooperative&apos;s membership. Each position plays a crucial
                     role in ensuring the smooth operation and growth of FEDCOOP,
