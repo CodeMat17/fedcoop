@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { User } from "lucide-react";
 import Image from "next/image";
 import { Button } from "./ui/button";
 
@@ -28,8 +29,8 @@ const Profile = ({ image, name, profile }: Props) => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          {image && (
-            <div className='flex justify-center sm:justify-start'>
+          <div className='flex justify-center sm:justify-start'>
+            {image ? (
               <Image
                 alt=''
                 priority
@@ -38,8 +39,13 @@ const Profile = ({ image, name, profile }: Props) => {
                 src={image}
                 className='rounded-full object-cover overflow-hidden'
               />
-            </div>
-          )}
+            ) : (
+              <div className='border rounded-full w-20 h-20 flex items-center justify-center'>
+                <User className='w-8 h-8' />
+              </div>
+            )}
+          </div>
+
           {name && <DialogTitle>{name}</DialogTitle>}
         </DialogHeader>
 
@@ -47,7 +53,9 @@ const Profile = ({ image, name, profile }: Props) => {
           {profile ? (
             <p className='text-muted-foreground'>{profile}</p>
           ) : (
-            <p className="text-muted-foreground italic animate-pulse">No profile data found</p>
+            <p className='text-muted-foreground italic animate-pulse'>
+              No profile data found
+            </p>
           )}
         </div>
         <DialogFooter className='sm:justify-start'>
